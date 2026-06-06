@@ -1,8 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { ButtonComponent } from 'creamy-kit/lib/actions/button/button.component';
-import { CardComponent } from 'creamy-kit/lib/data-display/card/card.component';
-import { IconComponent } from 'creamy-kit/lib/media/icon/icon.component';
+import { ButtonComponent, CardComponent, IconComponent } from 'creamy-kit';
 
 @Component({
   selector: 'app-root',
