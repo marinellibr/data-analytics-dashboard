@@ -21,6 +21,7 @@
           "builder": "@angular/build:application",
           "options": {
             "baseHref": "/data-analytics-dashboard/",
+            "preserveSymlinks": true,
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
