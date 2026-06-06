@@ -34,12 +34,11 @@ jobs:
       - name: Build creamy-kit library
         run: |
           cd creamy-kit-angular
-          npm ci
+          npm install
           npm run build
-          cd ..
       
       - name: Install dashboard dependencies
-        run: npm ci
+        run: npm install
       
       - name: Build Angular project
         run: npm run build -- --configuration production
