@@ -1,0 +1,61 @@
+name: Deploy to GitHub Pages
+# 🌐 Live: https://marinellibr.github.io/data-analytics-dashboard
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      
+      - name: Build creamy-kit library
+        run: |
+          cd creamy-kit-angular
+          npm ci
+          npm run build
+          cd ..
+      
+      - name: Install dashboard dependencies
+        run: npm ci
+      
+      - name: Build Angular project
+        run: npm run build -- --configuration production
+      
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'dist/data-analytics-dashboard/browser'
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
