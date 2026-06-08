@@ -17,7 +17,7 @@
     "@angular/forms": "^21.2.0",
     "@angular/platform-browser": "^21.2.0",
     "@angular/router": "^21.2.0",
-    "creamy-kit": "file:./creamy-kit-angular/dist/creamy-kit",
+    "creamy-kit": "github:marinellibr/creamy-kit-angular",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
