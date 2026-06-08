@@ -34,6 +34,8 @@ jobs:
       - name: Build creamy-kit library
         run: |
           cd creamy-kit-angular
+          git fetch origin claude/dashboard-kit-angular-build-6XLIW
+          git checkout origin/claude/dashboard-kit-angular-build-6XLIW
           npm install
           npm run build
       
