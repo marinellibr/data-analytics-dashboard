@@ -1,0 +1,60 @@
+<div class="dashboard">
+  <header class="dashboard-header">
+    <creamy-kit-icon name="bar_chart" [size]="28" color="var(--primary-base)" />
+    <div>
+      <h1 class="dashboard-title">Dashboard</h1>
+      <span class="dashboard-app-id">{{ appID() }}</span>
+    </div>
+  </header>
+
+  <div class="summary-row">
+    <creamy-kit-card class="summary-card">
+      <span class="summary-label">Total de eventos</span>
+      <span class="summary-value">{{ events().length }}</span>
+    </creamy-kit-card>
+
+    <creamy-kit-card class="summary-card">
+      <creamy-kit-icon name="ads_click" [size]="18" color="var(--primary-base)" />
+      <span class="summary-label">Cliques</span>
+      <span class="summary-value">{{ totalClicks() }}</span>
+    </creamy-kit-card>
+
+    <creamy-kit-card class="summary-card">
+      <creamy-kit-icon name="web" [size]="18" color="var(--primary-base)" />
+      <span class="summary-label">Carregamentos</span>
+      <span class="summary-value">{{ totalPageLoads() }}</span>
+    </creamy-kit-card>
+  </div>
+
+  @if (events().length === 0) {
+    <creamy-kit-card class="empty-state">
+      <creamy-kit-icon name="inbox" [size]="40" color="var(--neutral-300)" />
+      <p>Nenhum evento encontrado para <strong>{{ appID() }}</strong>.</p>
+    </creamy-kit-card>
+  } @else {
+    <creamy-kit-card class="events-card">
+      <table class="events-table">
+        <thead>
+          <tr>
+            <th>Ação</th>
+            <th>Onde</th>
+            <th>Data / Hora</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (event of events(); track $index) {
+            <tr>
+              <td>
+                <span class="badge" [class]="'badge--' + event.action">
+                  {{ event.action === 'click' ? 'click' : 'loadPage' }}
+                </span>
+              </td>
+              <td class="where-cell">{{ event.where }}</td>
+              <td class="datetime-cell">{{ event.dateTime }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </creamy-kit-card>
+  }
+</div>

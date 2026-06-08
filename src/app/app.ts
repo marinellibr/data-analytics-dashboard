@@ -1,12 +1,9 @@
 import { Component } from '@angular/core';
-import { ButtonComponent, CardComponent, IconComponent } from 'creamy-kit';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [ButtonComponent, CardComponent, IconComponent],
-  templateUrl: './app.html',
-  styleUrl: './app.scss'
+  imports: [RouterOutlet],
+  template: '<router-outlet />',
 })
-export class App {
-  title = 'Data Analytics Dashboard';
-}
+export class App {}
