@@ -1,10 +1,17 @@
 <div class="dashboard">
   <header class="dashboard-header">
-    <creamy-kit-icon name="bar_chart" [size]="28" color="var(--primary-base)" />
-    <div>
+    <div class="header-left">
+      <creamy-kit-icon name="bar_chart" [size]="28" color="var(--primary-base)" />
       <h1 class="dashboard-title">Dashboard</h1>
-      <span class="dashboard-app-id">{{ appID() }}</span>
     </div>
+
+    <creamy-kit-dropdown
+      class="app-selector"
+      [options]="appOptions"
+      placeholder="Selecionar app"
+      [ngModel]="selectedAppID"
+      (ngModelChange)="onAppChange($event)"
+    />
   </header>
 
   <div class="summary-row">
@@ -14,13 +21,13 @@
     </creamy-kit-card>
 
     <creamy-kit-card class="summary-card">
-      <creamy-kit-icon name="ads_click" [size]="18" color="var(--primary-base)" />
+      <creamy-kit-icon name="ads_click" [size]="18" color="#6366f1" />
       <span class="summary-label">Cliques</span>
       <span class="summary-value">{{ totalClicks() }}</span>
     </creamy-kit-card>
 
     <creamy-kit-card class="summary-card">
-      <creamy-kit-icon name="web" [size]="18" color="var(--primary-base)" />
+      <creamy-kit-icon name="web" [size]="18" color="#22c55e" />
       <span class="summary-label">Carregamentos</span>
       <span class="summary-value">{{ totalPageLoads() }}</span>
     </creamy-kit-card>
@@ -32,6 +39,13 @@
       <p>Nenhum evento encontrado para <strong>{{ appID() }}</strong>.</p>
     </creamy-kit-card>
   } @else {
+    <div class="charts-row">
+      <app-action-chart [events]="events()" />
+      <app-location-chart [events]="events()" />
+    </div>
+
+    <app-timeline-chart [events]="events()" />
+
     <creamy-kit-card class="events-card">
       <table class="events-table">
         <thead>
@@ -46,7 +60,7 @@
             <tr>
               <td>
                 <span class="badge" [class]="'badge--' + event.action">
-                  {{ event.action === 'click' ? 'click' : 'loadPage' }}
+                  {{ event.action }}
                 </span>
               </td>
               <td class="where-cell">{{ event.where }}</td>

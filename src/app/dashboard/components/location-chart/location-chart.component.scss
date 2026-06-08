@@ -1,0 +1,25 @@
+.chart-card {
+  background: #fff;
+  border: 1px solid var(--neutral-200, #e5e7eb);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100%;
+}
+
+.chart-title {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--neutral-600, #4b5563);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.canvas-wrapper {
+  flex: 1;
+  min-height: 260px;
+  position: relative;
+}
