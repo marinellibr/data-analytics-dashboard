@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs/operators';
-import { DropdownComponent, IconComponent } from 'creamy-kit';
+import { DropdownComponent, IconComponent, TagComponent, TextComponent } from 'creamy-kit';
 
 import { ANALYTICS_EVENTS_MOCK } from '../mocks/analytics-events.mock';
 import { AnalyticsEvent } from '../models/analytics-event';
@@ -15,7 +15,16 @@ const uniqueAppIDs = [...new Set(ANALYTICS_EVENTS_MOCK.map((e) => e.appID))].sor
 
 @Component({
   selector: 'app-dashboard',
-  imports: [FormsModule, IconComponent, DropdownComponent, ActionChartComponent, LocationChartComponent, TimelineChartComponent],
+  imports: [
+    FormsModule,
+    IconComponent,
+    TextComponent,
+    TagComponent,
+    DropdownComponent,
+    ActionChartComponent,
+    LocationChartComponent,
+    TimelineChartComponent,
+  ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
