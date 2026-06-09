@@ -58,6 +58,10 @@ export class DashboardComponent {
     { id: 'events',   label: 'Eventos',      icon: 'list' },
   ];
 
+  readonly currentTabLabel = computed(() =>
+    this.tabs.find(t => t.id === this.selectedTab())?.label ?? '',
+  );
+
   readonly events = computed<AnalyticsEvent[]>(() =>
     ANALYTICS_EVENTS_MOCK.filter((e) => e.appID === this.appID()),
   );
