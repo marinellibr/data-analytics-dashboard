@@ -39,7 +39,7 @@ export class ActionChartComponent {
           plugins: {
             legend: {
               position: 'bottom',
-              labels: { padding: 16, font: { size: 12 }, color: '#78350f' },
+              labels: { padding: 16, font: { size: 12 }, color: '#022f5e' },
             },
             tooltip: { callbacks: { label: (ctx) => ` ${ctx.label}: ${ctx.raw}` } },
           },
@@ -68,8 +68,8 @@ export class ActionChartComponent {
           events.filter((e) => e.action === 'click').length,
           events.filter((e) => e.action === 'loadPage').length,
         ],
-        backgroundColor: ['#c026d3', '#f59e0b'],
-        hoverBackgroundColor: ['#a21caf', '#d97706'],
+        backgroundColor: ['#128cfe', '#ed339c'],
+        hoverBackgroundColor: ['#0070d4', '#c4197e'],
         borderWidth: 0,
       }],
     };

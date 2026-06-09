@@ -42,13 +42,13 @@ export class LocationChartComponent {
           scales: {
             x: {
               beginAtZero: true,
-              ticks: { precision: 0, font: { size: 12 }, color: '#6b21a8' },
-              grid: { color: '#f3e8ff' },
+              ticks: { precision: 0, font: { size: 12 }, color: '#022f5e' },
+              grid: { color: 'rgba(2,47,94,0.12)' },
             },
             y: {
               ticks: {
                 font: { size: 12, family: 'monospace' },
-                color: '#6b21a8',
+                color: '#022f5e',
                 callback: (_, i, ticks) => {
                   const label = (ticks[i] as { label: string }).label ?? '';
                   return label.length > 30 ? label.slice(0, 29) + '…' : label;
@@ -84,8 +84,8 @@ export class LocationChartComponent {
       labels: sorted.map(([l]) => l),
       datasets: [{
         data: sorted.map(([, v]) => v),
-        backgroundColor: '#c026d388',
-        hoverBackgroundColor: '#c026d3',
+        backgroundColor: '#128cfe88',
+        hoverBackgroundColor: '#128cfe',
         borderRadius: 6,
         borderSkipped: false,
       }],

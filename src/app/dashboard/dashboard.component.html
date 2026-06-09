@@ -1,7 +1,7 @@
 <div class="shell">
   <header class="topbar">
     <div class="brand">
-      <creamy-kit-icon name="bar_chart" [size]="22" color="#818cf8" />
+      <creamy-kit-icon name="bar_chart" [size]="22" color="var(--primary-base)" />
       <span>Analytics</span>
     </div>
     <creamy-kit-dropdown
@@ -14,8 +14,8 @@
 
   @if (events().length === 0) {
     <div class="empty">
-      <creamy-kit-icon name="inbox" [size]="48" color="#475569" />
-      <p>Nenhum evento para <strong>{{ appID() }}</strong></p>
+      <creamy-kit-icon name="inbox" [size]="48" color="var(--border-medium)" />
+      <creamy-kit-text type="body">Nenhum evento para <strong>{{ appID() }}</strong></creamy-kit-text>
     </div>
   } @else {
     <div class="bento">
@@ -25,26 +25,26 @@
         <div class="hero-blob"></div>
         <creamy-kit-icon name="analytics" [size]="28" color="rgba(255,255,255,0.5)" />
         <span class="hero-num">{{ events().length }}</span>
-        <span class="hero-label">total de eventos</span>
+        <creamy-kit-text type="label" size="xsmall" color="on-brand">total de eventos</creamy-kit-text>
       </div>
 
       <!-- ── Clicks ── -->
       <div class="cell clicks">
         <creamy-kit-icon name="ads_click" [size]="24" color="rgba(255,255,255,0.6)" />
         <span class="stat-num">{{ totalClicks() }}</span>
-        <span class="stat-label">cliques</span>
+        <creamy-kit-text type="label" size="xsmall" color="on-brand">cliques</creamy-kit-text>
       </div>
 
       <!-- ── Page loads ── -->
       <div class="cell loads">
         <creamy-kit-icon name="web" [size]="24" color="rgba(255,255,255,0.6)" />
         <span class="stat-num">{{ totalPageLoads() }}</span>
-        <span class="stat-label">carregamentos</span>
+        <creamy-kit-text type="label" size="xsmall" color="on-brand">carregamentos</creamy-kit-text>
       </div>
 
       <!-- ── Timeline (dark) ── -->
       <div class="cell timeline">
-        <p class="cell-title light">Eventos por data</p>
+        <creamy-kit-text type="label" size="xsmall" color="on-brand">Eventos por data</creamy-kit-text>
         <div class="chart-fill">
           <app-timeline-chart [events]="events()" />
         </div>
@@ -52,7 +52,7 @@
 
       <!-- ── Donut ── -->
       <div class="cell donut">
-        <p class="cell-title amber">Distribuição de ações</p>
+        <creamy-kit-text type="label" size="xsmall" color="variant">Distribuição de ações</creamy-kit-text>
         <div class="chart-fill">
           <app-action-chart [events]="events()" />
         </div>
@@ -60,7 +60,7 @@
 
       <!-- ── Location ── -->
       <div class="cell location">
-        <p class="cell-title purple">Top locais</p>
+        <creamy-kit-text type="label" size="xsmall" color="variant">Top locais</creamy-kit-text>
         <div class="chart-fill">
           <app-location-chart [events]="events()" />
         </div>
@@ -68,7 +68,7 @@
 
       <!-- ── Events table ── -->
       <div class="cell table-cell">
-        <p class="cell-title dark">Todos os eventos</p>
+        <creamy-kit-text type="label" size="xsmall" color="on-brand">Todos os eventos</creamy-kit-text>
         <div class="table-scroll">
           <table class="events-table">
             <thead>
@@ -82,7 +82,11 @@
               @for (ev of events(); track $index) {
                 <tr>
                   <td>
-                    <span class="badge" [class]="'badge--' + ev.action">{{ ev.action }}</span>
+                    @if (ev.action === 'click') {
+                      <creamy-kit-tag color="primary">{{ ev.action }}</creamy-kit-tag>
+                    } @else {
+                      <creamy-kit-tag color="success">{{ ev.action }}</creamy-kit-tag>
+                    }
                   </td>
                   <td class="mono">{{ ev.where }}</td>
                   <td class="muted">{{ ev.dateTime }}</td>
