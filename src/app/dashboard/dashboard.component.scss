@@ -212,6 +212,27 @@
   &--table { padding-bottom: 0; }
 }
 
+/* ─── Stat icon + tooltip ────────────────────────── */
+.stat-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+
+  creamy-kit-tooltip {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+    z-index: 20;
+  }
+
+  &:hover creamy-kit-tooltip { opacity: 1; }
+}
+
 /* ─── Chart fill ─────────────────────────────────── */
 .chart-fill {
   flex: 1;

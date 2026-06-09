@@ -57,22 +57,34 @@
           <div class="tab-panel">
             <div class="stats-row stats-row--4">
               <div class="stat-card">
-                <creamy-kit-icon name="analytics" [size]="18" color="var(--primary-base)" />
+                <div class="stat-icon">
+                  <creamy-kit-icon name="analytics" [size]="18" color="var(--primary-base)" />
+                  <creamy-kit-tooltip text="Soma de cliques e carregamentos de página" />
+                </div>
                 <span class="stat-num">{{ events().length }}</span>
                 <creamy-kit-text type="label" size="xsmall" color="variant">Total de eventos</creamy-kit-text>
               </div>
               <div class="stat-card">
-                <creamy-kit-icon name="people" [size]="18" color="var(--secondary-base)" />
+                <div class="stat-icon">
+                  <creamy-kit-icon name="people" [size]="18" color="var(--secondary-base)" />
+                  <creamy-kit-tooltip text="Número de sessões iniciadas no período" />
+                </div>
                 <span class="stat-num">{{ totalSessions() }}</span>
                 <creamy-kit-text type="label" size="xsmall" color="variant">Sessões</creamy-kit-text>
               </div>
               <div class="stat-card">
-                <creamy-kit-icon name="ads_click" [size]="18" color="var(--primary-base)" />
+                <div class="stat-icon">
+                  <creamy-kit-icon name="ads_click" [size]="18" color="var(--primary-base)" />
+                  <creamy-kit-tooltip text="Interações do tipo click registradas" />
+                </div>
                 <span class="stat-num">{{ totalClicks() }}</span>
                 <creamy-kit-text type="label" size="xsmall" color="variant">Cliques</creamy-kit-text>
               </div>
               <div class="stat-card">
-                <creamy-kit-icon name="web" [size]="18" color="var(--secondary-base)" />
+                <div class="stat-icon">
+                  <creamy-kit-icon name="web" [size]="18" color="var(--secondary-base)" />
+                  <creamy-kit-tooltip text="Eventos de carregamento de página (loadPage)" />
+                </div>
                 <span class="stat-num">{{ totalPageLoads() }}</span>
                 <creamy-kit-text type="label" size="xsmall" color="variant">Carregamentos</creamy-kit-text>
               </div>
@@ -95,17 +107,26 @@
           <div class="tab-panel">
             <div class="stats-row stats-row--3">
               <div class="stat-card">
-                <creamy-kit-icon name="people" [size]="18" color="var(--primary-base)" />
+                <div class="stat-icon">
+                  <creamy-kit-icon name="people" [size]="18" color="var(--primary-base)" />
+                  <creamy-kit-tooltip text="Total de sessões no período selecionado" />
+                </div>
                 <span class="stat-num">{{ totalSessions() }}</span>
                 <creamy-kit-text type="label" size="xsmall" color="variant">Sessões</creamy-kit-text>
               </div>
               <div class="stat-card">
-                <creamy-kit-icon name="timer" [size]="18" color="var(--secondary-base)" />
+                <div class="stat-icon">
+                  <creamy-kit-icon name="timer" [size]="18" color="var(--secondary-base)" />
+                  <creamy-kit-tooltip text="Média do tempo em página por sessão, em segundos" />
+                </div>
                 <span class="stat-num">{{ avgTimeOnPage() }}s</span>
                 <creamy-kit-text type="label" size="xsmall" color="variant">Tempo médio na página</creamy-kit-text>
               </div>
               <div class="stat-card">
-                <creamy-kit-icon name="pageview" [size]="18" color="var(--primary-base)" />
+                <div class="stat-icon">
+                  <creamy-kit-icon name="pageview" [size]="18" color="var(--primary-base)" />
+                  <creamy-kit-tooltip text="Número total de carregamentos de página registrados" />
+                </div>
                 <span class="stat-num">{{ pageLoads().length }}</span>
                 <creamy-kit-text type="label" size="xsmall" color="variant">Page Views</creamy-kit-text>
               </div>
@@ -132,17 +153,29 @@
           <div class="tab-panel">
             <div class="stats-row stats-row--3">
               <div class="stat-card">
-                <creamy-kit-icon name="http" [size]="18" color="var(--primary-base)" />
+                <div class="stat-icon">
+                  <creamy-kit-icon name="http" [size]="18" color="var(--primary-base)" />
+                  <creamy-kit-tooltip text="Total de requisições HTTP rastreadas" />
+                </div>
                 <span class="stat-num">{{ totalHttpCalls() }}</span>
                 <creamy-kit-text type="label" size="xsmall" color="variant">Chamadas HTTP</creamy-kit-text>
               </div>
               <div class="stat-card" [class.stat-card--alert]="errorRate() > 10">
-                <creamy-kit-icon name="error_outline" [size]="18" color="#ef4444" />
+                <div class="stat-icon">
+                  <creamy-kit-icon name="error_outline" [size]="18" color="#ef4444" />
+                  <creamy-kit-tooltip
+                    text="Percentual de respostas 4xx e 5xx. Alerta acima de 10%"
+                    [variant]="errorRate() > 10 ? 'contrast' : 'default'"
+                  />
+                </div>
                 <span class="stat-num">{{ errorRate() }}%</span>
                 <creamy-kit-text type="label" size="xsmall" color="variant">Taxa de erros</creamy-kit-text>
               </div>
               <div class="stat-card">
-                <creamy-kit-icon name="speed" [size]="18" color="var(--secondary-base)" />
+                <div class="stat-icon">
+                  <creamy-kit-icon name="speed" [size]="18" color="var(--secondary-base)" />
+                  <creamy-kit-tooltip text="Tempo médio de resposta de todas as chamadas" />
+                </div>
                 <span class="stat-num">{{ avgDuration() }}ms</span>
                 <creamy-kit-text type="label" size="xsmall" color="variant">Duração média</creamy-kit-text>
               </div>

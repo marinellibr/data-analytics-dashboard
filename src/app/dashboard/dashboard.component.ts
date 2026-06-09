@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs/operators';
-import { DropdownComponent, IconComponent, TagComponent, TextComponent } from 'creamy-kit';
+import { DropdownComponent, IconComponent, TagComponent, TextComponent, TooltipComponent } from 'creamy-kit';
 
 import { ANALYTICS_EVENTS_MOCK } from '../mocks/analytics-events.mock';
 import { SESSIONS_MOCK } from '../mocks/sessions.mock';
@@ -26,7 +26,7 @@ type TabID = 'overview' | 'sessions' | 'http' | 'events';
   selector: 'app-dashboard',
   imports: [
     FormsModule,
-    IconComponent, TextComponent, TagComponent, DropdownComponent,
+    IconComponent, TextComponent, TagComponent, DropdownComponent, TooltipComponent,
     ActionChartComponent, LocationChartComponent, TimelineChartComponent,
     DeviceChartComponent, ReferrerChartComponent,
     HttpStatusChartComponent, ResponseTimeChartComponent,
