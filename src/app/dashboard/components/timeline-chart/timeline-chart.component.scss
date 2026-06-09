@@ -1,23 +1,5 @@
-.chart-card {
-  background: #fff;
-  border: 1px solid var(--neutral-200, #e5e7eb);
-  border-radius: 12px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.chart-title {
-  margin: 0;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--neutral-600, #4b5563);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.canvas-wrapper {
-  min-height: 220px;
-  position: relative;
+:host {
+  display: block;
+  position: absolute;
+  inset: 0;
 }

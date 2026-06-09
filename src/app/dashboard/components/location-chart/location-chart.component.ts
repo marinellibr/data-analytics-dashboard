@@ -9,15 +9,7 @@ import {
   inject,
   input,
 } from '@angular/core';
-import {
-  BarController,
-  BarElement,
-  CategoryScale,
-  Chart,
-  LinearScale,
-  Tooltip,
-} from 'chart.js';
-
+import { BarController, BarElement, CategoryScale, Chart, LinearScale, Tooltip } from 'chart.js';
 import { AnalyticsEvent } from '../../../models/analytics-event';
 
 Chart.register(BarController, BarElement, CategoryScale, LinearScale, Tooltip);
@@ -26,14 +18,7 @@ const TOP_N = 8;
 
 @Component({
   selector: 'app-location-chart',
-  template: `
-    <div class="chart-card">
-      <p class="chart-title">Top locais (por eventos)</p>
-      <div class="canvas-wrapper">
-        <canvas #canvas></canvas>
-      </div>
-    </div>
-  `,
+  template: `<canvas #canvas></canvas>`,
   styleUrl: './location-chart.component.scss',
 })
 export class LocationChartComponent {
@@ -41,7 +26,6 @@ export class LocationChartComponent {
 
   @ViewChild('canvas') private canvas!: ElementRef<HTMLCanvasElement>;
   private chart?: Chart<'bar'>;
-
   private injector = inject(Injector);
   private destroyRef = inject(DestroyRef);
 
@@ -54,19 +38,20 @@ export class LocationChartComponent {
           indexAxis: 'y',
           responsive: true,
           maintainAspectRatio: false,
-          plugins: { legend: { display: false }, tooltip: {} },
+          plugins: { legend: { display: false } },
           scales: {
             x: {
               beginAtZero: true,
-              ticks: { precision: 0, font: { size: 12 } },
-              grid: { color: '#f3f4f6' },
+              ticks: { precision: 0, font: { size: 12 }, color: '#6b21a8' },
+              grid: { color: '#f3e8ff' },
             },
             y: {
               ticks: {
                 font: { size: 12, family: 'monospace' },
+                color: '#6b21a8',
                 callback: (_, i, ticks) => {
                   const label = (ticks[i] as { label: string }).label ?? '';
-                  return label.length > 28 ? label.slice(0, 27) + '…' : label;
+                  return label.length > 30 ? label.slice(0, 29) + '…' : label;
                 },
               },
               grid: { display: false },
@@ -77,9 +62,8 @@ export class LocationChartComponent {
 
       effect(
         () => {
-          const e = this.events();
           if (!this.chart) return;
-          const d = this.buildData(e);
+          const d = this.buildData(this.events());
           this.chart.data = d;
           this.chart.update();
         },
@@ -92,25 +76,19 @@ export class LocationChartComponent {
 
   private buildData(events = this.events()) {
     const counts = new Map<string, number>();
-    for (const e of events) {
-      counts.set(e.where, (counts.get(e.where) ?? 0) + 1);
-    }
+    for (const e of events) counts.set(e.where, (counts.get(e.where) ?? 0) + 1);
 
-    const sorted = [...counts.entries()]
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, TOP_N);
+    const sorted = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, TOP_N);
 
     return {
-      labels: sorted.map(([label]) => label),
-      datasets: [
-        {
-          data: sorted.map(([, v]) => v),
-          backgroundColor: '#6366f1cc',
-          hoverBackgroundColor: '#6366f1',
-          borderRadius: 4,
-          borderSkipped: false,
-        },
-      ],
+      labels: sorted.map(([l]) => l),
+      datasets: [{
+        data: sorted.map(([, v]) => v),
+        backgroundColor: '#c026d388',
+        hoverBackgroundColor: '#c026d3',
+        borderRadius: 6,
+        borderSkipped: false,
+      }],
     };
   }
 }

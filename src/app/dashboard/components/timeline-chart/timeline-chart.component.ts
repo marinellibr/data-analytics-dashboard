@@ -18,21 +18,13 @@ import {
   LinearScale,
   Tooltip,
 } from 'chart.js';
-
 import { AnalyticsEvent } from '../../../models/analytics-event';
 
 Chart.register(BarController, BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 @Component({
   selector: 'app-timeline-chart',
-  template: `
-    <div class="chart-card">
-      <p class="chart-title">Eventos por data</p>
-      <div class="canvas-wrapper">
-        <canvas #canvas></canvas>
-      </div>
-    </div>
-  `,
+  template: `<canvas #canvas></canvas>`,
   styleUrl: './timeline-chart.component.scss',
 })
 export class TimelineChartComponent {
@@ -40,7 +32,6 @@ export class TimelineChartComponent {
 
   @ViewChild('canvas') private canvas!: ElementRef<HTMLCanvasElement>;
   private chart?: Chart<'bar'>;
-
   private injector = inject(Injector);
   private destroyRef = inject(DestroyRef);
 
@@ -53,20 +44,22 @@ export class TimelineChartComponent {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: { display: true, position: 'top' },
-            tooltip: {},
+            legend: {
+              position: 'top',
+              labels: { color: '#bae6fd', font: { size: 12 }, padding: 16 },
+            },
           },
           scales: {
             x: {
               stacked: true,
-              ticks: { font: { size: 12 } },
-              grid: { display: false },
+              ticks: { color: '#7dd3fc', font: { size: 12 } },
+              grid: { color: 'rgba(255,255,255,0.06)' },
             },
             y: {
               stacked: true,
               beginAtZero: true,
-              ticks: { precision: 0, font: { size: 12 } },
-              grid: { color: '#f3f4f6' },
+              ticks: { precision: 0, color: '#7dd3fc', font: { size: 12 } },
+              grid: { color: 'rgba(255,255,255,0.06)' },
             },
           },
         },
@@ -74,10 +67,8 @@ export class TimelineChartComponent {
 
       effect(
         () => {
-          const e = this.events();
           if (!this.chart) return;
-          const d = this.buildData(e);
-          this.chart.data = d;
+          this.chart.data = this.buildData(this.events());
           this.chart.update();
         },
         { injector: this.injector },
@@ -88,22 +79,17 @@ export class TimelineChartComponent {
   }
 
   private buildData(events = this.events()) {
-    // Parse "dd/MM/yyyy hh:mm AM/PM" → extract date part
     const clicksByDate = new Map<string, number>();
     const loadsByDate = new Map<string, number>();
 
     for (const e of events) {
-      const date = e.dateTime.split(' ')[0]; // "dd/MM/yyyy"
-      if (e.action === 'click') {
-        clicksByDate.set(date, (clicksByDate.get(date) ?? 0) + 1);
-      } else {
-        loadsByDate.set(date, (loadsByDate.get(date) ?? 0) + 1);
-      }
+      const date = e.dateTime.split(' ')[0];
+      if (e.action === 'click') clicksByDate.set(date, (clicksByDate.get(date) ?? 0) + 1);
+      else loadsByDate.set(date, (loadsByDate.get(date) ?? 0) + 1);
     }
 
-    // Build unified sorted date labels
     const allDates = [...new Set([...clicksByDate.keys(), ...loadsByDate.keys()])].sort(
-      (a, b) => this.dateToMs(a) - this.dateToMs(b),
+      (a, b) => this.toMs(a) - this.toMs(b),
     );
 
     return {
@@ -112,25 +98,24 @@ export class TimelineChartComponent {
         {
           label: 'Cliques',
           data: allDates.map((d) => clicksByDate.get(d) ?? 0),
-          backgroundColor: '#6366f1cc',
-          hoverBackgroundColor: '#6366f1',
-          borderRadius: 4,
+          backgroundColor: '#f472b6cc',
+          hoverBackgroundColor: '#f472b6',
+          borderRadius: 6,
           borderSkipped: false,
         },
         {
           label: 'Carregamentos',
           data: allDates.map((d) => loadsByDate.get(d) ?? 0),
-          backgroundColor: '#22c55ecc',
-          hoverBackgroundColor: '#22c55e',
-          borderRadius: 4,
+          backgroundColor: '#34d399cc',
+          hoverBackgroundColor: '#34d399',
+          borderRadius: 6,
           borderSkipped: false,
         },
       ],
     };
   }
 
-  // "dd/MM/yyyy" → milliseconds for sorting
-  private dateToMs(date: string): number {
+  private toMs(date: string): number {
     const [d, m, y] = date.split('/').map(Number);
     return new Date(y, m - 1, d).getTime();
   }
