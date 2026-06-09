@@ -91,11 +91,23 @@
             </div>
             <div class="charts-row charts-row--3-1">
               <div class="chart-card">
-                <creamy-kit-text type="label" size="xsmall" color="variant">Eventos por data</creamy-kit-text>
+                <div class="chart-header">
+                  <creamy-kit-text type="label" size="xsmall" color="variant">Eventos por data</creamy-kit-text>
+                  <div class="stat-icon">
+                    <creamy-kit-icon name="info" [size]="14" color="#94a3b8" />
+                    <creamy-kit-tooltip text="Cliques e carregamentos agrupados por dia" />
+                  </div>
+                </div>
                 <div class="chart-fill"><app-timeline-chart [events]="events()" /></div>
               </div>
               <div class="chart-card">
-                <creamy-kit-text type="label" size="xsmall" color="variant">Distribuição</creamy-kit-text>
+                <div class="chart-header">
+                  <creamy-kit-text type="label" size="xsmall" color="variant">Distribuição</creamy-kit-text>
+                  <div class="stat-icon">
+                    <creamy-kit-icon name="info" [size]="14" color="#94a3b8" />
+                    <creamy-kit-tooltip text="Proporção de cliques vs. carregamentos de página" />
+                  </div>
+                </div>
                 <div class="chart-fill"><app-action-chart [events]="events()" /></div>
               </div>
             </div>
@@ -133,15 +145,33 @@
             </div>
             <div class="charts-row charts-row--thirds">
               <div class="chart-card">
-                <creamy-kit-text type="label" size="xsmall" color="variant">Dispositivos</creamy-kit-text>
+                <div class="chart-header">
+                  <creamy-kit-text type="label" size="xsmall" color="variant">Dispositivos</creamy-kit-text>
+                  <div class="stat-icon">
+                    <creamy-kit-icon name="info" [size]="14" color="#94a3b8" />
+                    <creamy-kit-tooltip text="Sessões agrupadas por tipo de dispositivo (desktop, mobile, tablet)" />
+                  </div>
+                </div>
                 <div class="chart-fill"><app-device-chart [sessions]="sessions()" /></div>
               </div>
               <div class="chart-card">
-                <creamy-kit-text type="label" size="xsmall" color="variant">Origem do tráfego</creamy-kit-text>
+                <div class="chart-header">
+                  <creamy-kit-text type="label" size="xsmall" color="variant">Origem do tráfego</creamy-kit-text>
+                  <div class="stat-icon">
+                    <creamy-kit-icon name="info" [size]="14" color="#94a3b8" />
+                    <creamy-kit-tooltip text="Sessões agrupadas por referrer de origem" />
+                  </div>
+                </div>
                 <div class="chart-fill"><app-referrer-chart [sessions]="sessions()" /></div>
               </div>
               <div class="chart-card">
-                <creamy-kit-text type="label" size="xsmall" color="variant">Top páginas</creamy-kit-text>
+                <div class="chart-header">
+                  <creamy-kit-text type="label" size="xsmall" color="variant">Top páginas</creamy-kit-text>
+                  <div class="stat-icon">
+                    <creamy-kit-icon name="info" [size]="14" color="#94a3b8" />
+                    <creamy-kit-tooltip text="Páginas com mais acessos no período" />
+                  </div>
+                </div>
                 <div class="chart-fill"><app-location-chart [events]="events()" /></div>
               </div>
             </div>
@@ -182,11 +212,23 @@
             </div>
             <div class="charts-row charts-row--half">
               <div class="chart-card">
-                <creamy-kit-text type="label" size="xsmall" color="variant">Status das respostas</creamy-kit-text>
+                <div class="chart-header">
+                  <creamy-kit-text type="label" size="xsmall" color="variant">Status das respostas</creamy-kit-text>
+                  <div class="stat-icon">
+                    <creamy-kit-icon name="info" [size]="14" color="#94a3b8" />
+                    <creamy-kit-tooltip text="Chamadas por classe HTTP: 2xx sucesso, 4xx erro de cliente, 5xx erro de servidor" />
+                  </div>
+                </div>
                 <div class="chart-fill"><app-http-status-chart [httpCalls]="httpCalls()" /></div>
               </div>
               <div class="chart-card">
-                <creamy-kit-text type="label" size="xsmall" color="variant">Tempo médio por endpoint</creamy-kit-text>
+                <div class="chart-header">
+                  <creamy-kit-text type="label" size="xsmall" color="variant">Tempo médio por endpoint</creamy-kit-text>
+                  <div class="stat-icon">
+                    <creamy-kit-icon name="info" [size]="14" color="#94a3b8" />
+                    <creamy-kit-tooltip text="Top 8 endpoints ordenados por tempo médio de resposta" />
+                  </div>
+                </div>
                 <div class="chart-fill"><app-response-time-chart [httpCalls]="httpCalls()" /></div>
               </div>
             </div>
@@ -198,11 +240,23 @@
           <div class="tab-panel tab-panel--events">
             <div class="charts-row charts-row--1-2">
               <div class="chart-card">
-                <creamy-kit-text type="label" size="xsmall" color="variant">Top locais</creamy-kit-text>
+                <div class="chart-header">
+                  <creamy-kit-text type="label" size="xsmall" color="variant">Top locais</creamy-kit-text>
+                  <div class="stat-icon">
+                    <creamy-kit-icon name="info" [size]="14" color="#94a3b8" />
+                    <creamy-kit-tooltip text="Páginas com maior número de eventos registrados" />
+                  </div>
+                </div>
                 <div class="chart-fill"><app-location-chart [events]="events()" /></div>
               </div>
               <div class="chart-card chart-card--table">
-                <creamy-kit-text type="label" size="xsmall" color="variant">Todos os eventos</creamy-kit-text>
+                <div class="chart-header">
+                  <creamy-kit-text type="label" size="xsmall" color="variant">Todos os eventos</creamy-kit-text>
+                  <div class="stat-icon">
+                    <creamy-kit-icon name="info" [size]="14" color="#94a3b8" />
+                    <creamy-kit-tooltip text="Lista completa de eventos ordenada por data" />
+                  </div>
+                </div>
                 <div class="table-scroll">
                   <table class="events-table">
                     <thead>

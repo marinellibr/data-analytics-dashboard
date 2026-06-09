@@ -196,6 +196,13 @@
   }
 }
 
+/* ─── Chart header ───────────────────────────────── */
+.chart-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 /* ─── Chart card ─────────────────────────────────── */
 .chart-card {
   background: #fff;
