@@ -14,8 +14,7 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #fff;
-  border-right: 1px solid var(--border-medium, #e2e8f0);
+  background: var(--secondary-variant, #022f5e);
   overflow: hidden;
 }
 
@@ -23,20 +22,22 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 18px 16px 16px;
-  border-bottom: 1px solid var(--border-medium, #e2e8f0);
+  height: 56px;
+  padding: 0 16px;
+  flex-shrink: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 
   .brand-name {
     font-weight: 700;
     font-size: 0.95rem;
-    color: var(--secondary-variant, #022f5e);
+    color: #fff;
     letter-spacing: -0.01em;
   }
 }
 
 .sidebar-app {
   padding: 14px 16px;
-  border-bottom: 1px solid var(--border-medium, #e2e8f0);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .sidebar-section-label {
@@ -45,7 +46,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #b0bec5;
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .sidebar-nav {
@@ -69,20 +70,20 @@
   cursor: pointer;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #64748b;
+  color: rgba(255, 255, 255, 0.6);
   text-align: left;
   transition: background 0.12s, color 0.12s;
 
   &:hover:not(:disabled) {
-    background: var(--background-base, #f4f6f9);
-    color: var(--secondary-variant, #022f5e);
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
   }
 
-  &:disabled { opacity: 0.4; cursor: default; }
+  &:disabled { opacity: 0.35; cursor: default; }
 
   &.active {
-    background: rgba(18, 140, 254, 0.09);
-    color: var(--primary-base, #128cfe);
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
     font-weight: 600;
   }
 }
@@ -91,22 +92,22 @@
 .main {
   height: 100vh;
   display: grid;
-  grid-template-rows: 52px 1fr;
+  grid-template-rows: 56px 1fr;
   overflow: hidden;
 }
 
 .main-header {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: space-between;
   padding: 0 20px;
-  background: #fff;
-  border-bottom: 1px solid var(--border-medium, #e2e8f0);
+  background: var(--secondary-variant, #022f5e);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 
   .page-title {
     font-weight: 700;
     font-size: 1rem;
-    color: var(--secondary-variant, #022f5e);
+    color: #fff;
     letter-spacing: -0.01em;
   }
 }
