@@ -46,20 +46,20 @@ export class TimelineChartComponent {
           plugins: {
             legend: {
               position: 'top',
-              labels: { color: '#bae6fd', font: { size: 12 }, padding: 16 },
+              labels: { color: '#022f5e', font: { size: 12 }, padding: 16 },
             },
           },
           scales: {
             x: {
               stacked: true,
-              ticks: { color: '#7dd3fc', font: { size: 12 } },
-              grid: { color: 'rgba(255,255,255,0.06)' },
+              ticks: { color: '#64748b', font: { size: 12 } },
+              grid: { color: 'rgba(0,0,0,0.05)' },
             },
             y: {
               stacked: true,
               beginAtZero: true,
-              ticks: { precision: 0, color: '#7dd3fc', font: { size: 12 } },
-              grid: { color: 'rgba(255,255,255,0.06)' },
+              ticks: { precision: 0, color: '#64748b', font: { size: 12 } },
+              grid: { color: 'rgba(0,0,0,0.05)' },
             },
           },
         },
