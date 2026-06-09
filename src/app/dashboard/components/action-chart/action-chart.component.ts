@@ -9,28 +9,14 @@ import {
   inject,
   input,
 } from '@angular/core';
-import {
-  ArcElement,
-  Chart,
-  DoughnutController,
-  Legend,
-  Tooltip,
-} from 'chart.js';
-
+import { ArcElement, Chart, DoughnutController, Legend, Tooltip } from 'chart.js';
 import { AnalyticsEvent } from '../../../models/analytics-event';
 
 Chart.register(DoughnutController, ArcElement, Tooltip, Legend);
 
 @Component({
   selector: 'app-action-chart',
-  template: `
-    <div class="chart-card">
-      <p class="chart-title">Distribuição de ações</p>
-      <div class="canvas-wrapper">
-        <canvas #canvas></canvas>
-      </div>
-    </div>
-  `,
+  template: `<canvas #canvas></canvas>`,
   styleUrl: './action-chart.component.scss',
 })
 export class ActionChartComponent {
@@ -38,7 +24,6 @@ export class ActionChartComponent {
 
   @ViewChild('canvas') private canvas!: ElementRef<HTMLCanvasElement>;
   private chart?: Chart<'doughnut'>;
-
   private injector = inject(Injector);
   private destroyRef = inject(DestroyRef);
 
@@ -50,19 +35,21 @@ export class ActionChartComponent {
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          cutout: '68%',
           plugins: {
-            legend: { position: 'bottom', labels: { padding: 16, font: { size: 13 } } },
+            legend: {
+              position: 'bottom',
+              labels: { padding: 16, font: { size: 12 }, color: '#78350f' },
+            },
             tooltip: { callbacks: { label: (ctx) => ` ${ctx.label}: ${ctx.raw}` } },
           },
-          cutout: '65%',
         },
       });
 
       effect(
         () => {
-          const e = this.events();
           if (!this.chart) return;
-          const d = this.buildData(e);
+          const d = this.buildData(this.events());
           this.chart.data.datasets[0].data = d.datasets[0].data;
           this.chart.update();
         },
@@ -74,18 +61,17 @@ export class ActionChartComponent {
   }
 
   private buildData(events = this.events()) {
-    const clicks = events.filter((e) => e.action === 'click').length;
-    const loads = events.filter((e) => e.action === 'loadPage').length;
     return {
       labels: ['Cliques', 'Carregamentos'],
-      datasets: [
-        {
-          data: [clicks, loads],
-          backgroundColor: ['#6366f1', '#22c55e'],
-          hoverBackgroundColor: ['#4f46e5', '#16a34a'],
-          borderWidth: 0,
-        },
-      ],
+      datasets: [{
+        data: [
+          events.filter((e) => e.action === 'click').length,
+          events.filter((e) => e.action === 'loadPage').length,
+        ],
+        backgroundColor: ['#c026d3', '#f59e0b'],
+        hoverBackgroundColor: ['#a21caf', '#d97706'],
+        borderWidth: 0,
+      }],
     };
   }
 }
