@@ -3,7 +3,7 @@
   <!-- ── Sidebar ── -->
   <aside class="sidebar">
     <div class="sidebar-brand">
-      <creamy-kit-icon name="bar_chart" [size]="20" color="rgba(255,255,255,0.85)" />
+      <creamy-kit-icon name="layout_base" [size]="20" color="rgba(255,255,255,0.85)" />
       <span class="brand-name">Analytics</span>
     </div>
 
@@ -47,7 +47,7 @@
 
       @if (!appID()) {
         <div class="empty">
-          <creamy-kit-icon name="bar_chart" [size]="52" color="var(--border-medium, #cbd5e1)" />
+          <creamy-kit-icon name="layout_base" [size]="52" color="var(--border-medium, #cbd5e1)" />
           <creamy-kit-text type="body">Selecione um app na barra lateral para ver os dados</creamy-kit-text>
         </div>
       } @else {
@@ -58,7 +58,7 @@
             <div class="stats-row stats-row--4">
               <div class="stat-card">
                 <div class="stat-icon">
-                  <creamy-kit-icon name="analytics" [size]="18" color="var(--primary-base)" />
+                  <creamy-kit-icon name="layout_base" [size]="18" color="var(--primary-base)" />
                   <creamy-kit-tooltip text="Soma de cliques e carregamentos de página" />
                 </div>
                 <span class="stat-num">{{ events().length }}</span>
@@ -66,7 +66,7 @@
               </div>
               <div class="stat-card">
                 <div class="stat-icon">
-                  <creamy-kit-icon name="people" [size]="18" color="var(--secondary-base)" />
+                  <creamy-kit-icon name="user_base" [size]="18" color="var(--secondary-base)" />
                   <creamy-kit-tooltip text="Número de sessões iniciadas no período" />
                 </div>
                 <span class="stat-num">{{ totalSessions() }}</span>
@@ -74,7 +74,7 @@
               </div>
               <div class="stat-card">
                 <div class="stat-icon">
-                  <creamy-kit-icon name="ads_click" [size]="18" color="var(--primary-base)" />
+                  <creamy-kit-icon name="target_base" [size]="18" color="var(--primary-base)" />
                   <creamy-kit-tooltip text="Interações do tipo click registradas" />
                 </div>
                 <span class="stat-num">{{ totalClicks() }}</span>
@@ -82,7 +82,7 @@
               </div>
               <div class="stat-card">
                 <div class="stat-icon">
-                  <creamy-kit-icon name="web" [size]="18" color="var(--secondary-base)" />
+                  <creamy-kit-icon name="cloud_base" [size]="18" color="var(--secondary-base)" />
                   <creamy-kit-tooltip text="Eventos de carregamento de página (loadPage)" />
                 </div>
                 <span class="stat-num">{{ totalPageLoads() }}</span>
@@ -94,7 +94,7 @@
                 <div class="chart-header">
                   <creamy-kit-text type="label" size="xsmall" color="variant">Eventos por data</creamy-kit-text>
                   <div class="stat-icon">
-                    <creamy-kit-icon name="info" [size]="14" color="#94a3b8" />
+                    <creamy-kit-icon name="information_base" [size]="14" color="#94a3b8" />
                     <creamy-kit-tooltip text="Cliques e carregamentos agrupados por dia" />
                   </div>
                 </div>
@@ -104,7 +104,7 @@
                 <div class="chart-header">
                   <creamy-kit-text type="label" size="xsmall" color="variant">Distribuição</creamy-kit-text>
                   <div class="stat-icon">
-                    <creamy-kit-icon name="info" [size]="14" color="#94a3b8" />
+                    <creamy-kit-icon name="information_base" [size]="14" color="#94a3b8" />
                     <creamy-kit-tooltip text="Proporção de cliques vs. carregamentos de página" />
                   </div>
                 </div>
@@ -120,7 +120,7 @@
             <div class="stats-row stats-row--3">
               <div class="stat-card">
                 <div class="stat-icon">
-                  <creamy-kit-icon name="people" [size]="18" color="var(--primary-base)" />
+                  <creamy-kit-icon name="user_base" [size]="18" color="var(--primary-base)" />
                   <creamy-kit-tooltip text="Total de sessões no período selecionado" />
                 </div>
                 <span class="stat-num">{{ totalSessions() }}</span>
@@ -128,7 +128,7 @@
               </div>
               <div class="stat-card">
                 <div class="stat-icon">
-                  <creamy-kit-icon name="timer" [size]="18" color="var(--secondary-base)" />
+                  <creamy-kit-icon name="clock_base" [size]="18" color="var(--secondary-base)" />
                   <creamy-kit-tooltip text="Média do tempo em página por sessão, em segundos" />
                 </div>
                 <span class="stat-num">{{ avgTimeOnPage() }}s</span>
@@ -136,7 +136,7 @@
               </div>
               <div class="stat-card">
                 <div class="stat-icon">
-                  <creamy-kit-icon name="pageview" [size]="18" color="var(--primary-base)" />
+                  <creamy-kit-icon name="desktop_base" [size]="18" color="var(--primary-base)" />
                   <creamy-kit-tooltip text="Número total de carregamentos de página registrados" />
                 </div>
                 <span class="stat-num">{{ pageLoads().length }}</span>
@@ -148,7 +148,7 @@
                 <div class="chart-header">
                   <creamy-kit-text type="label" size="xsmall" color="variant">Dispositivos</creamy-kit-text>
                   <div class="stat-icon">
-                    <creamy-kit-icon name="info" [size]="14" color="#94a3b8" />
+                    <creamy-kit-icon name="information_base" [size]="14" color="#94a3b8" />
                     <creamy-kit-tooltip text="Sessões agrupadas por tipo de dispositivo (desktop, mobile, tablet)" />
                   </div>
                 </div>
@@ -158,7 +158,7 @@
                 <div class="chart-header">
                   <creamy-kit-text type="label" size="xsmall" color="variant">Origem do tráfego</creamy-kit-text>
                   <div class="stat-icon">
-                    <creamy-kit-icon name="info" [size]="14" color="#94a3b8" />
+                    <creamy-kit-icon name="information_base" [size]="14" color="#94a3b8" />
                     <creamy-kit-tooltip text="Sessões agrupadas por referrer de origem" />
                   </div>
                 </div>
@@ -168,7 +168,7 @@
                 <div class="chart-header">
                   <creamy-kit-text type="label" size="xsmall" color="variant">Top páginas</creamy-kit-text>
                   <div class="stat-icon">
-                    <creamy-kit-icon name="info" [size]="14" color="#94a3b8" />
+                    <creamy-kit-icon name="information_base" [size]="14" color="#94a3b8" />
                     <creamy-kit-tooltip text="Páginas com mais acessos no período" />
                   </div>
                 </div>
@@ -184,7 +184,7 @@
             <div class="stats-row stats-row--3">
               <div class="stat-card">
                 <div class="stat-icon">
-                  <creamy-kit-icon name="http" [size]="18" color="var(--primary-base)" />
+                  <creamy-kit-icon name="code_base" [size]="18" color="var(--primary-base)" />
                   <creamy-kit-tooltip text="Total de requisições HTTP rastreadas" />
                 </div>
                 <span class="stat-num">{{ totalHttpCalls() }}</span>
@@ -192,7 +192,7 @@
               </div>
               <div class="stat-card" [class.stat-card--alert]="errorRate() > 10">
                 <div class="stat-icon">
-                  <creamy-kit-icon name="error_outline" [size]="18" color="#ef4444" />
+                  <creamy-kit-icon name="warning_base" [size]="18" color="#ef4444" />
                   <creamy-kit-tooltip
                     text="Percentual de respostas 4xx e 5xx. Alerta acima de 10%"
                     [variant]="errorRate() > 10 ? 'contrast' : 'default'"
@@ -203,7 +203,7 @@
               </div>
               <div class="stat-card">
                 <div class="stat-icon">
-                  <creamy-kit-icon name="speed" [size]="18" color="var(--secondary-base)" />
+                  <creamy-kit-icon name="loading_base" [size]="18" color="var(--secondary-base)" />
                   <creamy-kit-tooltip text="Tempo médio de resposta de todas as chamadas" />
                 </div>
                 <span class="stat-num">{{ avgDuration() }}ms</span>
@@ -215,7 +215,7 @@
                 <div class="chart-header">
                   <creamy-kit-text type="label" size="xsmall" color="variant">Status das respostas</creamy-kit-text>
                   <div class="stat-icon">
-                    <creamy-kit-icon name="info" [size]="14" color="#94a3b8" />
+                    <creamy-kit-icon name="information_base" [size]="14" color="#94a3b8" />
                     <creamy-kit-tooltip text="Chamadas por classe HTTP: 2xx sucesso, 4xx erro de cliente, 5xx erro de servidor" />
                   </div>
                 </div>
@@ -225,7 +225,7 @@
                 <div class="chart-header">
                   <creamy-kit-text type="label" size="xsmall" color="variant">Tempo médio por endpoint</creamy-kit-text>
                   <div class="stat-icon">
-                    <creamy-kit-icon name="info" [size]="14" color="#94a3b8" />
+                    <creamy-kit-icon name="information_base" [size]="14" color="#94a3b8" />
                     <creamy-kit-tooltip text="Top 8 endpoints ordenados por tempo médio de resposta" />
                   </div>
                 </div>
@@ -243,7 +243,7 @@
                 <div class="chart-header">
                   <creamy-kit-text type="label" size="xsmall" color="variant">Top locais</creamy-kit-text>
                   <div class="stat-icon">
-                    <creamy-kit-icon name="info" [size]="14" color="#94a3b8" />
+                    <creamy-kit-icon name="information_base" [size]="14" color="#94a3b8" />
                     <creamy-kit-tooltip text="Páginas com maior número de eventos registrados" />
                   </div>
                 </div>
@@ -253,7 +253,7 @@
                 <div class="chart-header">
                   <creamy-kit-text type="label" size="xsmall" color="variant">Todos os eventos</creamy-kit-text>
                   <div class="stat-icon">
-                    <creamy-kit-icon name="info" [size]="14" color="#94a3b8" />
+                    <creamy-kit-icon name="information_base" [size]="14" color="#94a3b8" />
                     <creamy-kit-tooltip text="Lista completa de eventos ordenada por data" />
                   </div>
                 </div>

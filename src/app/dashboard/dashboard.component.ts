@@ -99,10 +99,10 @@ export class DashboardComponent {
   readonly selectedTab = signal<TabID>('overview');
 
   readonly tabs: { id: TabID; label: string; icon: string }[] = [
-    { id: 'overview', label: 'Visão Geral', icon: 'dashboard' },
-    { id: 'sessions', label: 'Sessões',      icon: 'people' },
-    { id: 'http',     label: 'HTTP',         icon: 'http' },
-    { id: 'events',   label: 'Eventos',      icon: 'list' },
+    { id: 'overview', label: 'Visão Geral', icon: 'house_base' },
+    { id: 'sessions', label: 'Sessões',      icon: 'user_base' },
+    { id: 'http',     label: 'HTTP',         icon: 'code_base' },
+    { id: 'events',   label: 'Eventos',      icon: 'list_base' },
   ];
 
   readonly currentTabLabel = computed(() =>
