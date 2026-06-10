@@ -80,17 +80,15 @@ export class TimelineChartComponent {
 
   private buildData(events = this.events()) {
     const clicksByDate = new Map<string, number>();
-    const loadsByDate = new Map<string, number>();
+    const pageviewsByDate = new Map<string, number>();
 
     for (const e of events) {
-      const date = e.dateTime.split(' ')[0];
+      const date = e.timestamp.split('T')[0]; // Extract YYYY-MM-DD from ISO format
       if (e.action === 'click') clicksByDate.set(date, (clicksByDate.get(date) ?? 0) + 1);
-      else loadsByDate.set(date, (loadsByDate.get(date) ?? 0) + 1);
+      else pageviewsByDate.set(date, (pageviewsByDate.get(date) ?? 0) + 1);
     }
 
-    const allDates = [...new Set([...clicksByDate.keys(), ...loadsByDate.keys()])].sort(
-      (a, b) => this.toMs(a) - this.toMs(b),
-    );
+    const allDates = [...new Set([...clicksByDate.keys(), ...pageviewsByDate.keys()])].sort();
 
     return {
       labels: allDates,
@@ -104,8 +102,8 @@ export class TimelineChartComponent {
           borderSkipped: false,
         },
         {
-          label: 'Carregamentos',
-          data: allDates.map((d) => loadsByDate.get(d) ?? 0),
+          label: 'Page views',
+          data: allDates.map((d) => pageviewsByDate.get(d) ?? 0),
           backgroundColor: '#128cfecc',
           hoverBackgroundColor: '#128cfe',
           borderRadius: 6,
@@ -113,10 +111,5 @@ export class TimelineChartComponent {
         },
       ],
     };
-  }
-
-  private toMs(date: string): number {
-    const [d, m, y] = date.split('/').map(Number);
-    return new Date(y, m - 1, d).getTime();
   }
 }

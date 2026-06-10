@@ -56,7 +56,7 @@ export class ReferrerChartComponent {
 
   private buildData(sessions = this.sessions()) {
     const counts = new Map<string, number>();
-    for (const s of sessions) counts.set(s.referrer, (counts.get(s.referrer) ?? 0) + 1);
+    for (const s of sessions) counts.set(s.context.referrer, (counts.get(s.context.referrer) ?? 0) + 1);
     const sorted = [...counts.entries()].sort((a, b) => b[1] - a[1]);
     return {
       labels: sorted.map(([l]) => l),

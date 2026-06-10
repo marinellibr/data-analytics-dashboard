@@ -2,16 +2,14 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, forkJoin } from 'rxjs';
 
-import { ClickEvent } from '../models/click-event.model';
-import { PageLoadEvent } from '../models/page-load-event.model';
+import { AnalyticsEvent } from '../models/analytics-event';
 import { HttpCallEvent } from '../models/http-call-event.model';
 import { Session } from '../models/session.model';
 
 const API_BASE_URL = 'https://data-analytics-backend-two.vercel.app';
 
 export interface AnalyticsData {
-  clickEvents: ClickEvent[];
-  pageLoadEvents: PageLoadEvent[];
+  events: AnalyticsEvent[];
   httpCalls: HttpCallEvent[];
   sessions: Session[];
 }
@@ -20,12 +18,8 @@ export interface AnalyticsData {
 export class AnalyticsApiService {
   private http = inject(HttpClient);
 
-  getClickEvents(): Observable<ClickEvent[]> {
-    return this.http.get<ClickEvent[]>(`${API_BASE_URL}/click-events`);
-  }
-
-  getPageLoadEvents(): Observable<PageLoadEvent[]> {
-    return this.http.get<PageLoadEvent[]>(`${API_BASE_URL}/page-load-events`);
+  getEvents(): Observable<AnalyticsEvent[]> {
+    return this.http.get<AnalyticsEvent[]>(`${API_BASE_URL}/events`);
   }
 
   getHttpCalls(): Observable<HttpCallEvent[]> {
@@ -39,8 +33,7 @@ export class AnalyticsApiService {
   // Fetches every collection in parallel so the dashboard can populate at once
   getAll(): Observable<AnalyticsData> {
     return forkJoin({
-      clickEvents: this.getClickEvents(),
-      pageLoadEvents: this.getPageLoadEvents(),
+      events: this.getEvents(),
       httpCalls: this.getHttpCalls(),
       sessions: this.getSessions(),
     });

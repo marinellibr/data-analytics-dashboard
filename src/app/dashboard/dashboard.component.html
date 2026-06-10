@@ -269,11 +269,11 @@
                             @if (ev.action === 'click') {
                               <creamy-kit-tag color="primary">{{ ev.action }}</creamy-kit-tag>
                             } @else {
-                              <creamy-kit-tag color="success">{{ ev.action }}</creamy-kit-tag>
+                              <creamy-kit-tag color="success">pageview</creamy-kit-tag>
                             }
                           </td>
-                          <td class="mono">{{ ev.where }}</td>
-                          <td class="muted">{{ ev.dateTime }}</td>
+                          <td class="mono">{{ ev.location }}</td>
+                          <td class="muted">{{ ev.timestamp }}</td>
                         </tr>
                       }
                     </tbody>

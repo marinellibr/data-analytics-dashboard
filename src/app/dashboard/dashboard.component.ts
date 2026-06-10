@@ -8,8 +8,6 @@ import { DropdownComponent, IconComponent, TagComponent, TextComponent, TooltipC
 
 import { AnalyticsApiService, AnalyticsData } from '../services/analytics-api.service';
 import { AnalyticsEvent } from '../models/analytics-event';
-import { ClickEvent } from '../models/click-event.model';
-import { PageLoadEvent } from '../models/page-load-event.model';
 import { HttpCallEvent } from '../models/http-call-event.model';
 import { Session } from '../models/session.model';
 import { ActionChartComponent } from './components/action-chart/action-chart.component';
@@ -43,7 +41,7 @@ export class DashboardComponent {
   readonly loadError = signal(false);
 
   private static readonly EMPTY: AnalyticsData = {
-    clickEvents: [], pageLoadEvents: [], httpCalls: [], sessions: [],
+    events: [], httpCalls: [], sessions: [],
   };
 
   // Single request to the backend on Vercel, shared by every derived signal
@@ -60,27 +58,9 @@ export class DashboardComponent {
     { initialValue: DashboardComponent.EMPTY },
   );
 
-  private readonly clickEvents = computed<ClickEvent[]>(() => this.data().clickEvents);
-  private readonly pageLoadEvents = computed<PageLoadEvent[]>(() => this.data().pageLoadEvents);
+  private readonly allEvents = computed<AnalyticsEvent[]>(() => this.data().events);
   private readonly httpCalls_ = computed<HttpCallEvent[]>(() => this.data().httpCalls);
   private readonly sessions_ = computed<Session[]>(() => this.data().sessions);
-
-  // The dashboard's "events" view (click | loadPage) is derived by merging the
-  // click-events and page-load-events collections coming from the backend
-  private readonly allEvents = computed<AnalyticsEvent[]>(() => [
-    ...this.clickEvents().map((e) => ({
-      appID: e.appID,
-      action: 'click' as const,
-      where: e.where,
-      dateTime: e.dateTime,
-    })),
-    ...this.pageLoadEvents().map((e) => ({
-      appID: e.appID,
-      action: 'loadPage' as const,
-      where: e.where,
-      dateTime: e.dateTime,
-    })),
-  ]);
 
   readonly appOptions = computed(() => {
     const ids = [...new Set(this.allEvents().map((e) => e.appID))].sort();
@@ -113,16 +93,16 @@ export class DashboardComponent {
     this.allEvents().filter((e) => e.appID === this.appID()),
   );
   readonly totalClicks = computed(() => this.events().filter((e) => e.action === 'click').length);
-  readonly totalPageLoads = computed(() => this.events().filter((e) => e.action === 'loadPage').length);
+  readonly totalPageLoads = computed(() => this.events().filter((e) => e.action === 'pageview').length);
 
   readonly sessions = computed(() => this.sessions_().filter((s) => s.appID === this.appID()));
   readonly totalSessions = computed(() => this.sessions().length);
 
-  readonly pageLoads = computed(() => this.pageLoadEvents().filter((e) => e.appID === this.appID()));
+  readonly pageLoads = computed(() => this.events().filter((e) => e.action === 'pageview' && e.timeOnPage));
   readonly avgTimeOnPage = computed(() => {
     const loads = this.pageLoads();
     if (!loads.length) return 0;
-    return Math.round(loads.reduce((sum, e) => sum + e.timeOnPage, 0) / loads.length / 1000);
+    return Math.round(loads.reduce((sum, e) => sum + (e.timeOnPage || 0), 0) / loads.length / 1000);
   });
 
   readonly httpCalls = computed(() => this.httpCalls_().filter((e) => e.appID === this.appID()));
@@ -130,7 +110,7 @@ export class DashboardComponent {
   readonly errorRate = computed(() => {
     const calls = this.httpCalls();
     if (!calls.length) return 0;
-    return Math.round((calls.filter((c) => c.httpStatus >= 400).length / calls.length) * 100);
+    return Math.round((calls.filter((c) => c.status >= 400).length / calls.length) * 100);
   });
   readonly avgDuration = computed(() => {
     const calls = this.httpCalls();

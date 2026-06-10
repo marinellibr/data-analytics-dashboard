@@ -58,9 +58,9 @@ export class HttpStatusChartComponent {
       labels: ['2xx  Sucesso', '4xx  Cliente', '5xx  Servidor'],
       datasets: [{
         data: [
-          calls.filter(c => c.httpStatus >= 200 && c.httpStatus < 300).length,
-          calls.filter(c => c.httpStatus >= 400 && c.httpStatus < 500).length,
-          calls.filter(c => c.httpStatus >= 500).length,
+          calls.filter(c => c.status >= 200 && c.status < 300).length,
+          calls.filter(c => c.status >= 400 && c.status < 500).length,
+          calls.filter(c => c.status >= 500).length,
         ],
         backgroundColor: ['#128cfe', '#f59e0b', '#ef4444'],
         hoverBackgroundColor: ['#0070d4', '#d97706', '#dc2626'],

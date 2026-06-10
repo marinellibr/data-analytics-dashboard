@@ -76,7 +76,7 @@ export class LocationChartComponent {
 
   private buildData(events = this.events()) {
     const counts = new Map<string, number>();
-    for (const e of events) counts.set(e.where, (counts.get(e.where) ?? 0) + 1);
+    for (const e of events) counts.set(e.location, (counts.get(e.location) ?? 0) + 1);
 
     const sorted = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, TOP_N);
 

@@ -54,9 +54,9 @@ export class DeviceChartComponent {
       labels: ['Desktop', 'Mobile', 'Tablet'],
       datasets: [{
         data: [
-          sessions.filter(s => s.device === 'desktop').length,
-          sessions.filter(s => s.device === 'mobile').length,
-          sessions.filter(s => s.device === 'tablet').length,
+          sessions.filter(s => s.context.device === 'desktop').length,
+          sessions.filter(s => s.context.device === 'mobile').length,
+          sessions.filter(s => s.context.device === 'tablet').length,
         ],
         backgroundColor: ['#128cfe', '#ed339c', '#022f5e'],
         hoverBackgroundColor: ['#0070d4', '#c4197e', '#011d3a'],

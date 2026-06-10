@@ -5,7 +5,7 @@ export interface HttpCallEvent {
   sessionID: string;
   endpoint: string;
   method: HttpMethod;
-  httpStatus: number;
-  duration: number; // response time in ms
-  dateTime: string; // dd/MM/yyyy hh:mm AM/PM
+  status: number; // HTTP status code
+  duration: number; // response time in milliseconds
+  timestamp: string; // ISO 8601 format (YYYY-MM-DDTHH:mm:ss.sssZ)
 }

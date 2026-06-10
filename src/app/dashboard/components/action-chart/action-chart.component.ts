@@ -62,11 +62,11 @@ export class ActionChartComponent {
 
   private buildData(events = this.events()) {
     return {
-      labels: ['Cliques', 'Carregamentos'],
+      labels: ['Cliques', 'Page views'],
       datasets: [{
         data: [
           events.filter((e) => e.action === 'click').length,
-          events.filter((e) => e.action === 'loadPage').length,
+          events.filter((e) => e.action === 'pageview').length,
         ],
         backgroundColor: ['#128cfe', '#ed339c'],
         hoverBackgroundColor: ['#0070d4', '#c4197e'],

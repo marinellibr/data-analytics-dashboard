@@ -1,7 +1,7 @@
 export interface PageLoadEvent {
   appID: string;
   sessionID: string;
-  where: string;
-  timeOnPage: number; // ms
-  dateTime: string; // dd/MM/yyyy hh:mm AM/PM
+  location: string;
+  timeOnPage: number; // milliseconds
+  timestamp: string; // ISO 8601 format (YYYY-MM-DDTHH:mm:ss.sssZ)
 }

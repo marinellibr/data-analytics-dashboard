@@ -1,10 +1,16 @@
 export type DeviceType = 'desktop' | 'mobile' | 'tablet';
 
-export interface Session {
-  sessionID: string;
-  appID: string;
+export interface SessionContext {
   device: DeviceType;
   browser: string;
   referrer: string;
-  startedAt: string; // dd/MM/yyyy hh:mm AM/PM
+}
+
+export interface Session {
+  sessionID: string;
+  appID: string;
+  userID?: string;
+  context: SessionContext;
+  startTime: string; // ISO 8601 format (YYYY-MM-DDTHH:mm:ss.sssZ)
+  endTime?: string; // ISO 8601 format (YYYY-MM-DDTHH:mm:ss.sssZ)
 }
