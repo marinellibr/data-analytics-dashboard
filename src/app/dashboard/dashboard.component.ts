@@ -2,14 +2,16 @@ import { Component, computed, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { map } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { map, tap, catchError, shareReplay } from 'rxjs/operators';
 import { DropdownComponent, IconComponent, TagComponent, TextComponent, TooltipComponent } from 'creamy-kit';
 
-import { ANALYTICS_EVENTS_MOCK } from '../mocks/analytics-events.mock';
-import { SESSIONS_MOCK } from '../mocks/sessions.mock';
-import { PAGE_LOAD_EVENTS_MOCK } from '../mocks/page-load-events.mock';
-import { HTTP_CALLS_MOCK } from '../mocks/http-calls.mock';
+import { AnalyticsApiService, AnalyticsData } from '../services/analytics-api.service';
 import { AnalyticsEvent } from '../models/analytics-event';
+import { ClickEvent } from '../models/click-event.model';
+import { PageLoadEvent } from '../models/page-load-event.model';
+import { HttpCallEvent } from '../models/http-call-event.model';
+import { Session } from '../models/session.model';
 import { ActionChartComponent } from './components/action-chart/action-chart.component';
 import { LocationChartComponent } from './components/location-chart/location-chart.component';
 import { TimelineChartComponent } from './components/timeline-chart/timeline-chart.component';
@@ -17,8 +19,6 @@ import { DeviceChartComponent } from './components/device-chart/device-chart.com
 import { ReferrerChartComponent } from './components/referrer-chart/referrer-chart.component';
 import { HttpStatusChartComponent } from './components/http-status-chart/http-status-chart.component';
 import { ResponseTimeChartComponent } from './components/response-time-chart/response-time-chart.component';
-
-const uniqueAppIDs = [...new Set(ANALYTICS_EVENTS_MOCK.map((e) => e.appID))].sort();
 
 type TabID = 'overview' | 'sessions' | 'http' | 'events';
 
@@ -37,11 +37,58 @@ type TabID = 'overview' | 'sessions' | 'http' | 'events';
 export class DashboardComponent {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private api = inject(AnalyticsApiService);
 
-  readonly appOptions = uniqueAppIDs.map((id) => ({
-    label: id.charAt(0).toUpperCase() + id.slice(1),
-    value: id,
-  }));
+  readonly loading = signal(true);
+  readonly loadError = signal(false);
+
+  private static readonly EMPTY: AnalyticsData = {
+    clickEvents: [], pageLoadEvents: [], httpCalls: [], sessions: [],
+  };
+
+  // Single request to the backend on Vercel, shared by every derived signal
+  private readonly data = toSignal(
+    this.api.getAll().pipe(
+      tap(() => this.loading.set(false)),
+      catchError(() => {
+        this.loading.set(false);
+        this.loadError.set(true);
+        return of(DashboardComponent.EMPTY);
+      }),
+      shareReplay(1),
+    ),
+    { initialValue: DashboardComponent.EMPTY },
+  );
+
+  private readonly clickEvents = computed<ClickEvent[]>(() => this.data().clickEvents);
+  private readonly pageLoadEvents = computed<PageLoadEvent[]>(() => this.data().pageLoadEvents);
+  private readonly httpCalls_ = computed<HttpCallEvent[]>(() => this.data().httpCalls);
+  private readonly sessions_ = computed<Session[]>(() => this.data().sessions);
+
+  // The dashboard's "events" view (click | loadPage) is derived by merging the
+  // click-events and page-load-events collections coming from the backend
+  private readonly allEvents = computed<AnalyticsEvent[]>(() => [
+    ...this.clickEvents().map((e) => ({
+      appID: e.appID,
+      action: 'click' as const,
+      where: e.where,
+      dateTime: e.dateTime,
+    })),
+    ...this.pageLoadEvents().map((e) => ({
+      appID: e.appID,
+      action: 'loadPage' as const,
+      where: e.where,
+      dateTime: e.dateTime,
+    })),
+  ]);
+
+  readonly appOptions = computed(() => {
+    const ids = [...new Set(this.allEvents().map((e) => e.appID))].sort();
+    return ids.map((id) => ({
+      label: id.charAt(0).toUpperCase() + id.slice(1),
+      value: id,
+    }));
+  });
 
   readonly appID = toSignal(
     this.route.paramMap.pipe(map((p) => p.get('appID') ?? '')),
@@ -63,22 +110,22 @@ export class DashboardComponent {
   );
 
   readonly events = computed<AnalyticsEvent[]>(() =>
-    ANALYTICS_EVENTS_MOCK.filter((e) => e.appID === this.appID()),
+    this.allEvents().filter((e) => e.appID === this.appID()),
   );
   readonly totalClicks = computed(() => this.events().filter((e) => e.action === 'click').length);
   readonly totalPageLoads = computed(() => this.events().filter((e) => e.action === 'loadPage').length);
 
-  readonly sessions = computed(() => SESSIONS_MOCK.filter((s) => s.appID === this.appID()));
+  readonly sessions = computed(() => this.sessions_().filter((s) => s.appID === this.appID()));
   readonly totalSessions = computed(() => this.sessions().length);
 
-  readonly pageLoads = computed(() => PAGE_LOAD_EVENTS_MOCK.filter((e) => e.appID === this.appID()));
+  readonly pageLoads = computed(() => this.pageLoadEvents().filter((e) => e.appID === this.appID()));
   readonly avgTimeOnPage = computed(() => {
     const loads = this.pageLoads();
     if (!loads.length) return 0;
     return Math.round(loads.reduce((sum, e) => sum + e.timeOnPage, 0) / loads.length / 1000);
   });
 
-  readonly httpCalls = computed(() => HTTP_CALLS_MOCK.filter((e) => e.appID === this.appID()));
+  readonly httpCalls = computed(() => this.httpCalls_().filter((e) => e.appID === this.appID()));
   readonly totalHttpCalls = computed(() => this.httpCalls().length);
   readonly errorRate = computed(() => {
     const calls = this.httpCalls();

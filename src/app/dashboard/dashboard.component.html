@@ -10,7 +10,7 @@
     <div class="sidebar-app">
       <p class="sidebar-section-label">Aplicação</p>
       <creamy-kit-dropdown
-        [options]="appOptions"
+        [options]="appOptions()"
         placeholder="Selecionar app"
         [ngModel]="selectedAppID"
         (ngModelChange)="onAppChange($event)"
