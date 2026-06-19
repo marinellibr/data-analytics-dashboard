@@ -34,6 +34,13 @@ jobs:
       - name: Build Angular project
         run: npm run build -- --configuration production
 
+      # GitHub Pages has no server-side SPA fallback: a hard refresh or direct
+      # visit to a deep link (e.g. /creamy-angular/dashboard/2026-06-18/band/tarde)
+      # would 404. Serving a 404.html that is a copy of index.html lets Angular's
+      # router take over and resolve any route client-side.
+      - name: SPA fallback (404.html = index.html)
+        run: cp dist/data-analytics-dashboard/browser/index.html dist/data-analytics-dashboard/browser/404.html
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
