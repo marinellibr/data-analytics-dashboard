@@ -106,7 +106,7 @@
 .main-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 12px;
   padding: 0 20px;
   background: var(--secondary-variant, #022f5e);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -117,6 +117,55 @@
     color: #fff;
     letter-spacing: -0.01em;
   }
+
+  // The app tag is pushed to the far right.
+  creamy-kit-tag { margin-left: auto; }
+}
+
+/* Hamburger lives in the header; shown only on narrow screens. */
+.hamburger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.12s;
+
+  &:hover { background: rgba(255, 255, 255, 0.2); }
+}
+
+/* Close button inside the drawer header; shown only on narrow screens. */
+.sidebar-close {
+  display: none;
+  margin-left: auto;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px;
+
+  &:hover { color: #fff; }
+}
+
+/* Backdrop behind the drawer; only rendered visible on narrow screens. */
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 12, 27, 0.5);
+  z-index: 40;
+  opacity: 0;
+  transition: opacity 0.2s;
 }
 
 /* ─── Content ────────────────────────────────────── */
@@ -234,4 +283,70 @@
   color: #94a3b8;
   text-align: center;
   flex-shrink: 0;
+}
+
+/* ─── Tablet ─────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .shell { grid-template-columns: 200px 1fr; }
+}
+
+/* ─── Mobile: sidebar becomes an off-canvas drawer ─ */
+@media (max-width: 768px) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
+
+  // Drawer: fixed, slides in from the left.
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 264px;
+    max-width: 82vw;
+    z-index: 50;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    box-shadow: 2px 0 16px rgba(0, 0, 0, 0.25);
+
+    &--open { transform: translateX(0); }
+  }
+
+  // Backdrop only matters while the drawer is open.
+  .shell--menu-open .sidebar-backdrop {
+    display: block;
+    opacity: 1;
+  }
+
+  .hamburger { display: inline-flex; }
+  .sidebar-close { display: block; }
+
+  // The main column now owns the full width; let content scroll vertically
+  // since stacked charts need more height than a phone viewport offers.
+  .main { grid-template-rows: 56px 1fr; }
+
+  .content {
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 12px;
+  }
+
+  // Charts stack with a comfortable minimum height instead of splitting 50/50.
+  .charts {
+    grid-template-rows: none;
+    grid-auto-rows: minmax(260px, auto);
+  }
+
+  .main-header { padding: 0 12px; }
+}
+
+/* ─── Small phones ───────────────────────────────── */
+@media (max-width: 480px) {
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+
+  .main-header .page-title { font-size: 0.9rem; }
+
+  .chart-header {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
 }

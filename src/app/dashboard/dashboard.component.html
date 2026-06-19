@@ -1,10 +1,14 @@
-<div class="shell">
+<div class="shell" [class.shell--menu-open]="sidebarOpen()">
+
+  <!-- Backdrop (mobile only): tap to close the drawer -->
+  <div class="sidebar-backdrop" (click)="closeSidebar()" aria-hidden="true"></div>
 
   <!-- ── Sidebar ── -->
-  <aside class="sidebar">
+  <aside class="sidebar" [class.sidebar--open]="sidebarOpen()">
     <div class="sidebar-brand">
       <creamy-kit-icon name="layout_base" [size]="20" color="rgba(255,255,255,0.85)" />
       <span class="brand-name">Analytics</span>
+      <button class="sidebar-close" type="button" (click)="closeSidebar()" aria-label="Fechar menu">✕</button>
     </div>
 
     <div class="sidebar-app">
@@ -40,6 +44,7 @@
   <div class="main">
 
     <header class="main-header">
+      <button class="hamburger" type="button" (click)="toggleSidebar()" aria-label="Abrir menu">☰</button>
       <span class="page-title">Atividade por dia</span>
       @if (appID()) {
         <creamy-kit-tag color="neutral">{{ appID() }}</creamy-kit-tag>

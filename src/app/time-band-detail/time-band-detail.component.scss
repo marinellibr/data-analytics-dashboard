@@ -164,3 +164,14 @@ app-activity-table {
   flex: 1;
   min-height: 0;
 }
+
+/* ─── Mobile ─────────────────────────────────────── */
+@media (max-width: 768px) {
+  .detail-header { padding: 12px; }
+  .detail-content {
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 12px;
+  }
+  app-activity-table { min-height: 360px; }
+}

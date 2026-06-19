@@ -37,6 +37,16 @@ export class DashboardComponent {
   readonly loading = signal(true);
   readonly loadError = signal(false);
 
+  // Off-canvas sidebar state (only relevant on narrow screens).
+  readonly sidebarOpen = signal(false);
+
+  toggleSidebar(): void {
+    this.sidebarOpen.update((v) => !v);
+  }
+  closeSidebar(): void {
+    this.sidebarOpen.set(false);
+  }
+
   readonly appID = toSignal(
     this.route.paramMap.pipe(map((p) => p.get('appID') ?? '')),
     { initialValue: '' },
@@ -162,6 +172,7 @@ export class DashboardComponent {
   }
 
   onAppChange(appID: string): void {
+    this.closeSidebar();
     this.router.navigate(['/', appID, 'dashboard']);
   }
 
