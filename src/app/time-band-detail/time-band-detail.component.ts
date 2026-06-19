@@ -101,6 +101,20 @@ export class TimeBandDetailComponent {
     return c;
   });
 
+  // ── Show/hide toggle driven by the stat cards ─────────────────────────────
+  readonly visibleTypes = signal<Set<ActivityType>>(new Set(ACTIVITY_TYPES.map((t) => t.key)));
+
+  isVisible(type: ActivityType): boolean {
+    return this.visibleTypes().has(type);
+  }
+
+  toggleType(type: ActivityType): void {
+    const next = new Set(this.visibleTypes());
+    if (next.has(type)) next.delete(type);
+    else next.add(type);
+    this.visibleTypes.set(next);
+  }
+
   // ── Mini per-hour stacked chart ──────────────────────────────────────────
   readonly hourLabels = computed(() =>
     this.bandConfig().hours.map((h) => `${String(h).padStart(2, '0')}h`)
@@ -108,13 +122,14 @@ export class TimeBandDetailComponent {
 
   readonly hourSeries = computed<ChartSeries[]>(() => {
     const hours = this.bandConfig().hours;
+    const visible = this.visibleTypes();
     const byHour = new Map<number, Record<ActivityType, number>>();
     for (const h of hours) byHour.set(h, emptyCounts());
     for (const a of this.items()) {
       const rec = byHour.get(localHour(a.timestamp));
       if (rec) rec[a.type]++;
     }
-    return ACTIVITY_TYPES.map((t) => ({
+    return ACTIVITY_TYPES.filter((t) => visible.has(t.key)).map((t) => ({
       label: t.label,
       color: t.color,
       data: hours.map((h) => byHour.get(h)![t.key]),

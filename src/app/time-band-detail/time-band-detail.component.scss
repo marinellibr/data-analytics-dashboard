@@ -99,6 +99,24 @@
   &--total .stat-num { color: #fff; }
   &--total .stat-label { color: rgba(255, 255, 255, 0.7); }
 
+  // Toggle cards: clickable, drive show/hide of the matching chart series.
+  &--toggle {
+    text-align: left;
+    font-family: inherit;
+    cursor: pointer;
+    transition: border-color 0.12s, box-shadow 0.12s, opacity 0.12s;
+
+    &:hover { border-color: #cbd5e1; box-shadow: 0 1px 4px rgba(2, 47, 94, 0.08); }
+  }
+
+  // Hidden series: dimmed, dot turns hollow.
+  &--off {
+    opacity: 0.5;
+
+    .stat-dot { background: transparent !important; box-shadow: inset 0 0 0 2px #cbd5e1; }
+    .stat-num, .stat-label { color: #94a3b8; }
+  }
+
   .stat-label {
     font-size: 0.68rem;
     font-weight: 600;

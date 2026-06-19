@@ -42,11 +42,17 @@
           <span class="stat-label">Eventos na faixa</span>
         </div>
         @for (t of types; track t.key) {
-          <div class="stat-card">
+          <button
+            type="button"
+            class="stat-card stat-card--toggle"
+            [class.stat-card--off]="!isVisible(t.key)"
+            [attr.aria-pressed]="isVisible(t.key)"
+            (click)="toggleType(t.key)"
+          >
             <span class="stat-dot" [style.background]="t.color"></span>
             <span class="stat-num">{{ counts()[t.key] }}</span>
             <span class="stat-label">{{ t.label }}</span>
-          </div>
+          </button>
         }
       </div>
 
