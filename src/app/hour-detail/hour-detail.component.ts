@@ -6,7 +6,7 @@ import { map, switchMap, tap, catchError } from 'rxjs/operators';
 import { IconComponent, TextComponent, TagComponent } from 'creamy-kit';
 
 import { AnalyticsApiService, AppData } from '../services/analytics-api.service';
-import { Activity, ActivityType, ACTIVITY_TYPES, emptyCounts } from '../models/activity';
+import { Activity, ActivityType, ACTIVITY_TYPES, emptyCounts, localDay, localHour, localTime } from '../models/activity';
 
 const EMPTY: AppData = { appID: '', activities: [], counts: emptyCounts() };
 
@@ -72,7 +72,7 @@ export class HourDetailComponent {
     const day = this.day();
     const hour = this.hour();
     return this.data().activities
-      .filter((a) => a.timestamp.slice(0, 10) === day && new Date(a.timestamp).getUTCHours() === hour)
+      .filter((a) => localDay(a.timestamp) === day && localHour(a.timestamp) === hour)
       .sort((a, b) => a.timestamp.localeCompare(b.timestamp));
   });
 
@@ -113,7 +113,7 @@ export class HourDetailComponent {
   readonly dateLabel = computed(() => (this.day() ? formatDate(this.day()) : ''));
   readonly hourRange = computed(() => {
     const h = String(this.hour()).padStart(2, '0');
-    return `${h}:00 – ${h}:59 UTC`;
+    return `${h}:00 – ${h}:59 (horário local)`;
   });
 
   typeColor(type: ActivityType): string {
@@ -123,8 +123,8 @@ export class HourDetailComponent {
     return ACTIVITY_TYPES.find((t) => t.key === type)?.label ?? type;
   }
 
-  // "2026-06-18T14:32:45.123Z" -> "14:32:45"
+  // ISO (UTC) -> local "HH:mm:ss"
   timeOf(iso: string): string {
-    return iso.slice(11, 19);
+    return localTime(iso);
   }
 }

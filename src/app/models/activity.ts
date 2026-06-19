@@ -44,3 +44,24 @@ export const ACTIVITY_TYPES: TypeConfig[] = [
 export type TypeCounts = Record<ActivityType, number>;
 
 export const emptyCounts = (): TypeCounts => ({ click: 0, pageview: 0, http: 0, session: 0 });
+
+// Timestamps are stored in UTC (ISO 8601 with Z). The dashboard groups and
+// displays everything in the viewer's local timezone, so a user in GMT-3 sees
+// the hour the event actually happened for them — not the UTC hour.
+
+const pad = (n: number): string => String(n).padStart(2, '0');
+
+// ISO (UTC) -> local "YYYY-MM-DD"
+export const localDay = (iso: string): string => {
+  const d = new Date(iso);
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+};
+
+// ISO (UTC) -> local hour (0–23)
+export const localHour = (iso: string): number => new Date(iso).getHours();
+
+// ISO (UTC) -> local "HH:mm:ss"
+export const localTime = (iso: string): string => {
+  const d = new Date(iso);
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+};

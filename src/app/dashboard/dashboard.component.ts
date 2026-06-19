@@ -7,7 +7,7 @@ import { map, switchMap, tap, catchError, shareReplay } from 'rxjs/operators';
 import { DropdownComponent, IconComponent, TextComponent, TagComponent } from 'creamy-kit';
 
 import { AnalyticsApiService, AppData } from '../services/analytics-api.service';
-import { Activity, ActivityType, ACTIVITY_TYPES, emptyCounts } from '../models/activity';
+import { Activity, ActivityType, ACTIVITY_TYPES, emptyCounts, localDay, localHour } from '../models/activity';
 import { StackedBarChartComponent, ChartSeries } from './components/stacked-bar-chart/stacked-bar-chart.component';
 
 const EMPTY: AppData = { appID: '', activities: [], counts: emptyCounts() };
@@ -103,7 +103,7 @@ export class DashboardComponent {
   // ── Days present in the data ──────────────────────────────────────────────
   readonly days = computed<string[]>(() => {
     const set = new Set<string>();
-    for (const a of this.activities()) set.add(a.timestamp.slice(0, 10));
+    for (const a of this.activities()) set.add(localDay(a.timestamp));
     return [...set].sort();
   });
   readonly dayOptions = computed(() =>
@@ -117,7 +117,7 @@ export class DashboardComponent {
     const byDay = new Map<string, Record<ActivityType, number>>();
     for (const d of days) byDay.set(d, emptyCounts());
     for (const a of this.activities()) {
-      const rec = byDay.get(a.timestamp.slice(0, 10));
+      const rec = byDay.get(localDay(a.timestamp));
       if (rec) rec[a.type]++;
     }
     return this.activeTypes().map((t) => ({
@@ -136,9 +136,8 @@ export class DashboardComponent {
     const day = this.selectedDay();
     const byHour = this.hours.map(() => emptyCounts());
     for (const a of this.activities()) {
-      if (a.timestamp.slice(0, 10) !== day) continue;
-      const h = new Date(a.timestamp).getUTCHours();
-      byHour[h][a.type]++;
+      if (localDay(a.timestamp) !== day) continue;
+      byHour[localHour(a.timestamp)][a.type]++;
     }
     return this.activeTypes().map((t) => ({
       label: t.label,
