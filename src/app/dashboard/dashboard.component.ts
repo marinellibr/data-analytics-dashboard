@@ -3,31 +3,27 @@ import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { of } from 'rxjs';
-import { map, tap, catchError, shareReplay } from 'rxjs/operators';
-import { DropdownComponent, IconComponent, TagComponent, TextComponent, TooltipComponent } from 'creamy-kit';
+import { map, switchMap, tap, catchError, shareReplay } from 'rxjs/operators';
+import { DropdownComponent, IconComponent, TextComponent, TagComponent } from 'creamy-kit';
 
-import { AnalyticsApiService, AnalyticsData } from '../services/analytics-api.service';
-import { AnalyticsEvent } from '../models/analytics-event';
-import { HttpCallEvent } from '../models/http-call-event.model';
-import { Session } from '../models/session.model';
-import { ActionChartComponent } from './components/action-chart/action-chart.component';
-import { LocationChartComponent } from './components/location-chart/location-chart.component';
-import { TimelineChartComponent } from './components/timeline-chart/timeline-chart.component';
-import { DeviceChartComponent } from './components/device-chart/device-chart.component';
-import { ReferrerChartComponent } from './components/referrer-chart/referrer-chart.component';
-import { HttpStatusChartComponent } from './components/http-status-chart/http-status-chart.component';
-import { ResponseTimeChartComponent } from './components/response-time-chart/response-time-chart.component';
+import { AnalyticsApiService, AppData } from '../services/analytics-api.service';
+import { Activity, ActivityType, ACTIVITY_TYPES, emptyCounts } from '../models/activity';
+import { StackedBarChartComponent, ChartSeries } from './components/stacked-bar-chart/stacked-bar-chart.component';
 
-type TabID = 'overview' | 'sessions' | 'http' | 'events';
+const EMPTY: AppData = { appID: '', activities: [], counts: emptyCounts() };
+
+// "2026-06-18" -> "18/06"
+const formatDay = (iso: string): string => {
+  const [, m, d] = iso.split('-');
+  return `${d}/${m}`;
+};
 
 @Component({
   selector: 'app-dashboard',
   imports: [
     FormsModule,
-    IconComponent, TextComponent, TagComponent, DropdownComponent, TooltipComponent,
-    ActionChartComponent, LocationChartComponent, TimelineChartComponent,
-    DeviceChartComponent, ReferrerChartComponent,
-    HttpStatusChartComponent, ResponseTimeChartComponent,
+    IconComponent, TextComponent, TagComponent, DropdownComponent,
+    StackedBarChartComponent,
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
@@ -37,92 +33,140 @@ export class DashboardComponent {
   private router = inject(Router);
   private api = inject(AnalyticsApiService);
 
+  readonly types = ACTIVITY_TYPES;
   readonly loading = signal(true);
   readonly loadError = signal(false);
-
-  private static readonly EMPTY: AnalyticsData = {
-    events: [], httpCalls: [], sessions: [],
-  };
-
-  // Single request to the backend on Vercel, shared by every derived signal
-  private readonly data = toSignal(
-    this.api.getAll().pipe(
-      tap(() => this.loading.set(false)),
-      catchError(() => {
-        this.loading.set(false);
-        this.loadError.set(true);
-        return of(DashboardComponent.EMPTY);
-      }),
-      shareReplay(1),
-    ),
-    { initialValue: DashboardComponent.EMPTY },
-  );
-
-  private readonly allEvents = computed<AnalyticsEvent[]>(() => this.data().events);
-  private readonly httpCalls_ = computed<HttpCallEvent[]>(() => this.data().httpCalls);
-  private readonly sessions_ = computed<Session[]>(() => this.data().sessions);
-
-  readonly appOptions = computed(() => {
-    const ids = [...new Set(this.allEvents().map((e) => e.appID))].sort();
-    return ids.map((id) => ({
-      label: id.charAt(0).toUpperCase() + id.slice(1),
-      value: id,
-    }));
-  });
 
   readonly appID = toSignal(
     this.route.paramMap.pipe(map((p) => p.get('appID') ?? '')),
     { initialValue: '' },
   );
 
+  // Re-fetches whenever the :appID route param changes. One request per app
+  // via the aggregated /apps/:appID endpoint.
+  private readonly data = toSignal(
+    this.route.paramMap.pipe(
+      map((p) => p.get('appID') ?? ''),
+      switchMap((appID) => {
+        if (!appID) {
+          this.loading.set(false);
+          return of(EMPTY);
+        }
+        this.loading.set(true);
+        this.loadError.set(false);
+        return this.api.getAppData(appID).pipe(
+          tap(() => this.loading.set(false)),
+          catchError(() => {
+            this.loading.set(false);
+            this.loadError.set(true);
+            return of(EMPTY);
+          }),
+        );
+      }),
+      shareReplay(1),
+    ),
+    { initialValue: EMPTY },
+  );
+
+  // App picker
+  readonly apps = toSignal(
+    this.api.getApps().pipe(catchError(() => of([] as string[]))),
+    { initialValue: [] as string[] },
+  );
+  readonly appOptions = computed(() =>
+    this.apps().map((id) => ({ label: id.charAt(0).toUpperCase() + id.slice(1), value: id })),
+  );
   selectedAppID = '';
-  readonly selectedTab = signal<TabID>('overview');
 
-  readonly tabs: { id: TabID; label: string; icon: string }[] = [
-    { id: 'overview', label: 'Visão Geral', icon: 'house_base' },
-    { id: 'sessions', label: 'Sessões',      icon: 'user_base' },
-    { id: 'http',     label: 'HTTP',         icon: 'code_base' },
-    { id: 'events',   label: 'Eventos',      icon: 'list_base' },
-  ];
+  readonly activities = computed<Activity[]>(() => this.data().activities);
+  readonly counts = computed(() => this.data().counts);
+  readonly totalActivities = computed(() => this.activities().length);
 
-  readonly currentTabLabel = computed(() =>
-    this.tabs.find(t => t.id === this.selectedTab())?.label ?? '',
+  // ── Show/hide toggle, shared by both charts ───────────────────────────────
+  readonly visibleTypes = signal<Set<ActivityType>>(new Set(ACTIVITY_TYPES.map((t) => t.key)));
+
+  isVisible(type: ActivityType): boolean {
+    return this.visibleTypes().has(type);
+  }
+
+  toggleType(type: ActivityType): void {
+    const next = new Set(this.visibleTypes());
+    if (next.has(type)) next.delete(type);
+    else next.add(type);
+    this.visibleTypes.set(next);
+  }
+
+  private readonly activeTypes = computed(() =>
+    ACTIVITY_TYPES.filter((t) => this.visibleTypes().has(t.key)),
   );
 
-  readonly events = computed<AnalyticsEvent[]>(() =>
-    this.allEvents().filter((e) => e.appID === this.appID()),
+  // ── Days present in the data ──────────────────────────────────────────────
+  readonly days = computed<string[]>(() => {
+    const set = new Set<string>();
+    for (const a of this.activities()) set.add(a.timestamp.slice(0, 10));
+    return [...set].sort();
+  });
+  readonly dayOptions = computed(() =>
+    this.days().map((d) => ({ label: formatDay(d), value: d })),
   );
-  readonly totalClicks = computed(() => this.events().filter((e) => e.action === 'click').length);
-  readonly totalPageLoads = computed(() => this.events().filter((e) => e.action === 'pageview').length);
+  readonly selectedDay = signal<string>('');
 
-  readonly sessions = computed(() => this.sessions_().filter((s) => s.appID === this.appID()));
-  readonly totalSessions = computed(() => this.sessions().length);
+  // ── Per-day stacked chart ─────────────────────────────────────────────────
+  readonly dailySeries = computed<ChartSeries[]>(() => {
+    const days = this.days();
+    const byDay = new Map<string, Record<ActivityType, number>>();
+    for (const d of days) byDay.set(d, emptyCounts());
+    for (const a of this.activities()) {
+      const rec = byDay.get(a.timestamp.slice(0, 10));
+      if (rec) rec[a.type]++;
+    }
+    return this.activeTypes().map((t) => ({
+      label: t.label,
+      color: t.color,
+      data: days.map((d) => byDay.get(d)![t.key]),
+    }));
+  });
+  readonly dailyLabels = computed(() => this.days().map(formatDay));
 
-  readonly pageLoads = computed(() => this.events().filter((e) => e.action === 'pageview' && e.timeOnPage));
-  readonly avgTimeOnPage = computed(() => {
-    const loads = this.pageLoads();
-    if (!loads.length) return 0;
-    return Math.round(loads.reduce((sum, e) => sum + (e.timeOnPage || 0), 0) / loads.length / 1000);
+  // ── Per-hour chart for the selected day (0–23h) ───────────────────────────
+  private readonly hours = Array.from({ length: 24 }, (_, h) => h);
+  readonly hourlyLabels = this.hours.map((h) => `${String(h).padStart(2, '0')}h`);
+
+  readonly hourlySeries = computed<ChartSeries[]>(() => {
+    const day = this.selectedDay();
+    const byHour = this.hours.map(() => emptyCounts());
+    for (const a of this.activities()) {
+      if (a.timestamp.slice(0, 10) !== day) continue;
+      const h = new Date(a.timestamp).getUTCHours();
+      byHour[h][a.type]++;
+    }
+    return this.activeTypes().map((t) => ({
+      label: t.label,
+      color: t.color,
+      data: this.hours.map((h) => byHour[h][t.key]),
+    }));
   });
 
-  readonly httpCalls = computed(() => this.httpCalls_().filter((e) => e.appID === this.appID()));
-  readonly totalHttpCalls = computed(() => this.httpCalls().length);
-  readonly errorRate = computed(() => {
-    const calls = this.httpCalls();
-    if (!calls.length) return 0;
-    return Math.round((calls.filter((c) => c.status >= 400).length / calls.length) * 100);
-  });
-  readonly avgDuration = computed(() => {
-    const calls = this.httpCalls();
-    if (!calls.length) return 0;
-    return Math.round(calls.reduce((sum, c) => sum + c.duration, 0) / calls.length);
-  });
+  readonly hasData = computed(() => this.totalActivities() > 0);
 
   constructor() {
-    effect(() => { this.selectedAppID = this.appID(); });
+    effect(() => {
+      this.selectedAppID = this.appID();
+    });
+    // Keep the selected day valid: default to the most recent day with data.
+    effect(() => {
+      const days = this.days();
+      if (days.length && !days.includes(this.selectedDay())) {
+        this.selectedDay.set(days[days.length - 1]);
+      }
+    });
   }
 
   onAppChange(appID: string): void {
     this.router.navigate(['/', appID, 'dashboard']);
+  }
+
+  onDayChange(day: string): void {
+    this.selectedDay.set(day);
   }
 }

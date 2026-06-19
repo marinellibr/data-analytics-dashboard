@@ -17,27 +17,30 @@
       />
     </div>
 
-    <nav class="sidebar-nav">
-      <p class="sidebar-section-label">Menu</p>
-      @for (tab of tabs; track tab.id) {
-        <button
-          class="nav-btn"
-          [class.active]="selectedTab() === tab.id"
-          (click)="selectedTab.set(tab.id)"
-          [disabled]="!appID()"
-        >
-          <creamy-kit-icon [name]="tab.icon" [size]="17" />
-          {{ tab.label }}
-        </button>
-      }
-    </nav>
+    <div class="sidebar-app">
+      <p class="sidebar-section-label">Tipos de evento</p>
+      <div class="legend">
+        @for (t of types; track t.key) {
+          <button
+            class="legend-chip"
+            [class.off]="!isVisible(t.key)"
+            (click)="toggleType(t.key)"
+            [disabled]="!appID()"
+          >
+            <span class="legend-dot" [style.background]="t.color"></span>
+            <span class="legend-label">{{ t.label }}</span>
+            <span class="legend-count">{{ counts()[t.key] }}</span>
+          </button>
+        }
+      </div>
+    </div>
   </aside>
 
   <!-- ── Main ── -->
   <div class="main">
 
     <header class="main-header">
-      <span class="page-title">{{ appID() ? currentTabLabel() : 'Analytics' }}</span>
+      <span class="page-title">Atividade por dia</span>
       @if (appID()) {
         <creamy-kit-tag color="neutral">{{ appID() }}</creamy-kit-tag>
       }
@@ -47,242 +50,71 @@
 
       @if (!appID()) {
         <div class="empty">
-          <creamy-kit-icon name="layout_base" [size]="52" color="var(--border-medium, #cbd5e1)" />
+          <creamy-kit-icon name="layout_base" [size]="52" color="#cbd5e1" />
           <creamy-kit-text type="body">Selecione um app na barra lateral para ver os dados</creamy-kit-text>
+        </div>
+      } @else if (loading()) {
+        <div class="empty">
+          <creamy-kit-icon name="loading_base" [size]="40" color="#cbd5e1" />
+          <creamy-kit-text type="body">Carregando dados…</creamy-kit-text>
+        </div>
+      } @else if (loadError()) {
+        <div class="empty">
+          <creamy-kit-icon name="warning_base" [size]="44" color="#ef4444" />
+          <creamy-kit-text type="body">Não foi possível carregar os dados deste app</creamy-kit-text>
+        </div>
+      } @else if (!hasData()) {
+        <div class="empty">
+          <creamy-kit-icon name="information_base" [size]="44" color="#cbd5e1" />
+          <creamy-kit-text type="body">Nenhum registro encontrado para {{ appID() }}</creamy-kit-text>
         </div>
       } @else {
 
-        <!-- ── Visão Geral ── -->
-        @if (selectedTab() === 'overview') {
-          <div class="tab-panel">
-            <div class="stats-row stats-row--4">
-              <div class="stat-card">
-                <div class="stat-icon">
-                  <creamy-kit-icon name="layout_base" [size]="18" color="var(--primary-base)" />
-                  <creamy-kit-tooltip text="Soma de cliques e carregamentos de página" />
-                </div>
-                <span class="stat-num">{{ events().length }}</span>
-                <creamy-kit-text type="label" size="xsmall" color="variant">Total de eventos</creamy-kit-text>
-              </div>
-              <div class="stat-card">
-                <div class="stat-icon">
-                  <creamy-kit-icon name="user_base" [size]="18" color="var(--secondary-base)" />
-                  <creamy-kit-tooltip text="Número de sessões iniciadas no período" />
-                </div>
-                <span class="stat-num">{{ totalSessions() }}</span>
-                <creamy-kit-text type="label" size="xsmall" color="variant">Sessões</creamy-kit-text>
-              </div>
-              <div class="stat-card">
-                <div class="stat-icon">
-                  <creamy-kit-icon name="target_base" [size]="18" color="var(--primary-base)" />
-                  <creamy-kit-tooltip text="Interações do tipo click registradas" />
-                </div>
-                <span class="stat-num">{{ totalClicks() }}</span>
-                <creamy-kit-text type="label" size="xsmall" color="variant">Cliques</creamy-kit-text>
-              </div>
-              <div class="stat-card">
-                <div class="stat-icon">
-                  <creamy-kit-icon name="cloud_base" [size]="18" color="var(--secondary-base)" />
-                  <creamy-kit-tooltip text="Eventos de carregamento de página (loadPage)" />
-                </div>
-                <span class="stat-num">{{ totalPageLoads() }}</span>
-                <creamy-kit-text type="label" size="xsmall" color="variant">Carregamentos</creamy-kit-text>
-              </div>
-            </div>
-            <div class="charts-row charts-row--3-1">
-              <div class="chart-card">
-                <div class="chart-header">
-                  <creamy-kit-text type="label" size="xsmall" color="variant">Eventos por data</creamy-kit-text>
-                  <div class="stat-icon">
-                    <creamy-kit-icon name="information_base" [size]="14" color="#94a3b8" />
-                    <creamy-kit-tooltip text="Cliques e carregamentos agrupados por dia" />
-                  </div>
-                </div>
-                <div class="chart-fill"><app-timeline-chart [events]="events()" /></div>
-              </div>
-              <div class="chart-card">
-                <div class="chart-header">
-                  <creamy-kit-text type="label" size="xsmall" color="variant">Distribuição</creamy-kit-text>
-                  <div class="stat-icon">
-                    <creamy-kit-icon name="information_base" [size]="14" color="#94a3b8" />
-                    <creamy-kit-tooltip text="Proporção de cliques vs. carregamentos de página" />
-                  </div>
-                </div>
-                <div class="chart-fill"><app-action-chart [events]="events()" /></div>
-              </div>
-            </div>
+        <!-- Stat cards: total + per type -->
+        <div class="stats-row">
+          <div class="stat-card stat-card--total">
+            <span class="stat-num">{{ totalActivities() }}</span>
+            <creamy-kit-text type="label" size="xsmall" color="variant">Total de eventos</creamy-kit-text>
           </div>
-        }
+          @for (t of types; track t.key) {
+            <div class="stat-card">
+              <span class="stat-dot" [style.background]="t.color"></span>
+              <span class="stat-num">{{ counts()[t.key] }}</span>
+              <creamy-kit-text type="label" size="xsmall" color="variant">{{ t.label }}</creamy-kit-text>
+            </div>
+          }
+        </div>
 
-        <!-- ── Sessões ── -->
-        @if (selectedTab() === 'sessions') {
-          <div class="tab-panel">
-            <div class="stats-row stats-row--3">
-              <div class="stat-card">
-                <div class="stat-icon">
-                  <creamy-kit-icon name="user_base" [size]="18" color="var(--primary-base)" />
-                  <creamy-kit-tooltip text="Total de sessões no período selecionado" />
-                </div>
-                <span class="stat-num">{{ totalSessions() }}</span>
-                <creamy-kit-text type="label" size="xsmall" color="variant">Sessões</creamy-kit-text>
-              </div>
-              <div class="stat-card">
-                <div class="stat-icon">
-                  <creamy-kit-icon name="clock_base" [size]="18" color="var(--secondary-base)" />
-                  <creamy-kit-tooltip text="Média do tempo em página por sessão, em segundos" />
-                </div>
-                <span class="stat-num">{{ avgTimeOnPage() }}s</span>
-                <creamy-kit-text type="label" size="xsmall" color="variant">Tempo médio na página</creamy-kit-text>
-              </div>
-              <div class="stat-card">
-                <div class="stat-icon">
-                  <creamy-kit-icon name="desktop_base" [size]="18" color="var(--primary-base)" />
-                  <creamy-kit-tooltip text="Número total de carregamentos de página registrados" />
-                </div>
-                <span class="stat-num">{{ pageLoads().length }}</span>
-                <creamy-kit-text type="label" size="xsmall" color="variant">Page Views</creamy-kit-text>
-              </div>
-            </div>
-            <div class="charts-row charts-row--thirds">
-              <div class="chart-card">
-                <div class="chart-header">
-                  <creamy-kit-text type="label" size="xsmall" color="variant">Dispositivos</creamy-kit-text>
-                  <div class="stat-icon">
-                    <creamy-kit-icon name="information_base" [size]="14" color="#94a3b8" />
-                    <creamy-kit-tooltip text="Sessões agrupadas por tipo de dispositivo (desktop, mobile, tablet)" />
-                  </div>
-                </div>
-                <div class="chart-fill"><app-device-chart [sessions]="sessions()" /></div>
-              </div>
-              <div class="chart-card">
-                <div class="chart-header">
-                  <creamy-kit-text type="label" size="xsmall" color="variant">Origem do tráfego</creamy-kit-text>
-                  <div class="stat-icon">
-                    <creamy-kit-icon name="information_base" [size]="14" color="#94a3b8" />
-                    <creamy-kit-tooltip text="Sessões agrupadas por referrer de origem" />
-                  </div>
-                </div>
-                <div class="chart-fill"><app-referrer-chart [sessions]="sessions()" /></div>
-              </div>
-              <div class="chart-card">
-                <div class="chart-header">
-                  <creamy-kit-text type="label" size="xsmall" color="variant">Top páginas</creamy-kit-text>
-                  <div class="stat-icon">
-                    <creamy-kit-icon name="information_base" [size]="14" color="#94a3b8" />
-                    <creamy-kit-tooltip text="Páginas com mais acessos no período" />
-                  </div>
-                </div>
-                <div class="chart-fill"><app-location-chart [events]="events()" /></div>
-              </div>
-            </div>
-          </div>
-        }
+        <!-- Charts -->
+        <div class="charts">
 
-        <!-- ── HTTP ── -->
-        @if (selectedTab() === 'http') {
-          <div class="tab-panel">
-            <div class="stats-row stats-row--3">
-              <div class="stat-card">
-                <div class="stat-icon">
-                  <creamy-kit-icon name="code_base" [size]="18" color="var(--primary-base)" />
-                  <creamy-kit-tooltip text="Total de requisições HTTP rastreadas" />
-                </div>
-                <span class="stat-num">{{ totalHttpCalls() }}</span>
-                <creamy-kit-text type="label" size="xsmall" color="variant">Chamadas HTTP</creamy-kit-text>
-              </div>
-              <div class="stat-card" [class.stat-card--alert]="errorRate() > 10">
-                <div class="stat-icon">
-                  <creamy-kit-icon name="warning_base" [size]="18" color="#ef4444" />
-                  <creamy-kit-tooltip
-                    text="Percentual de respostas 4xx e 5xx. Alerta acima de 10%"
-                    [variant]="errorRate() > 10 ? 'contrast' : 'default'"
-                  />
-                </div>
-                <span class="stat-num">{{ errorRate() }}%</span>
-                <creamy-kit-text type="label" size="xsmall" color="variant">Taxa de erros</creamy-kit-text>
-              </div>
-              <div class="stat-card">
-                <div class="stat-icon">
-                  <creamy-kit-icon name="loading_base" [size]="18" color="var(--secondary-base)" />
-                  <creamy-kit-tooltip text="Tempo médio de resposta de todas as chamadas" />
-                </div>
-                <span class="stat-num">{{ avgDuration() }}ms</span>
-                <creamy-kit-text type="label" size="xsmall" color="variant">Duração média</creamy-kit-text>
-              </div>
+          <div class="chart-card">
+            <div class="chart-header">
+              <creamy-kit-text type="label" size="xsmall" color="variant">Eventos por dia</creamy-kit-text>
+              <span class="chart-hint">{{ days().length }} dia(s)</span>
             </div>
-            <div class="charts-row charts-row--half">
-              <div class="chart-card">
-                <div class="chart-header">
-                  <creamy-kit-text type="label" size="xsmall" color="variant">Status das respostas</creamy-kit-text>
-                  <div class="stat-icon">
-                    <creamy-kit-icon name="information_base" [size]="14" color="#94a3b8" />
-                    <creamy-kit-tooltip text="Chamadas por classe HTTP: 2xx sucesso, 4xx erro de cliente, 5xx erro de servidor" />
-                  </div>
-                </div>
-                <div class="chart-fill"><app-http-status-chart [httpCalls]="httpCalls()" /></div>
-              </div>
-              <div class="chart-card">
-                <div class="chart-header">
-                  <creamy-kit-text type="label" size="xsmall" color="variant">Tempo médio por endpoint</creamy-kit-text>
-                  <div class="stat-icon">
-                    <creamy-kit-icon name="information_base" [size]="14" color="#94a3b8" />
-                    <creamy-kit-tooltip text="Top 8 endpoints ordenados por tempo médio de resposta" />
-                  </div>
-                </div>
-                <div class="chart-fill"><app-response-time-chart [httpCalls]="httpCalls()" /></div>
-              </div>
+            <div class="chart-fill">
+              <app-stacked-bar-chart [labels]="dailyLabels()" [series]="dailySeries()" />
             </div>
           </div>
-        }
 
-        <!-- ── Eventos ── -->
-        @if (selectedTab() === 'events') {
-          <div class="tab-panel tab-panel--events">
-            <div class="charts-row charts-row--1-2">
-              <div class="chart-card">
-                <div class="chart-header">
-                  <creamy-kit-text type="label" size="xsmall" color="variant">Top locais</creamy-kit-text>
-                  <div class="stat-icon">
-                    <creamy-kit-icon name="information_base" [size]="14" color="#94a3b8" />
-                    <creamy-kit-tooltip text="Páginas com maior número de eventos registrados" />
-                  </div>
-                </div>
-                <div class="chart-fill"><app-location-chart [events]="events()" /></div>
-              </div>
-              <div class="chart-card chart-card--table">
-                <div class="chart-header">
-                  <creamy-kit-text type="label" size="xsmall" color="variant">Todos os eventos</creamy-kit-text>
-                  <div class="stat-icon">
-                    <creamy-kit-icon name="information_base" [size]="14" color="#94a3b8" />
-                    <creamy-kit-tooltip text="Lista completa de eventos ordenada por data" />
-                  </div>
-                </div>
-                <div class="table-scroll">
-                  <table class="events-table">
-                    <thead>
-                      <tr><th>Ação</th><th>Onde</th><th>Data / Hora</th></tr>
-                    </thead>
-                    <tbody>
-                      @for (ev of events(); track $index) {
-                        <tr>
-                          <td>
-                            @if (ev.action === 'click') {
-                              <creamy-kit-tag color="primary">{{ ev.action }}</creamy-kit-tag>
-                            } @else {
-                              <creamy-kit-tag color="success">pageview</creamy-kit-tag>
-                            }
-                          </td>
-                          <td class="mono">{{ ev.location }}</td>
-                          <td class="muted">{{ ev.timestamp }}</td>
-                        </tr>
-                      }
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+          <div class="chart-card">
+            <div class="chart-header">
+              <creamy-kit-text type="label" size="xsmall" color="variant">Distribuição nas 24h</creamy-kit-text>
+              <creamy-kit-dropdown
+                class="day-picker"
+                [options]="dayOptions()"
+                placeholder="Dia"
+                [ngModel]="selectedDay()"
+                (ngModelChange)="onDayChange($event)"
+              />
+            </div>
+            <div class="chart-fill">
+              <app-stacked-bar-chart [labels]="hourlyLabels" [series]="hourlySeries()" />
             </div>
           </div>
-        }
+
+        </div>
 
       }
     </main>

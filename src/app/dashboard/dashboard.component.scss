@@ -3,7 +3,7 @@
   height: 100vh;
   overflow: hidden;
   display: grid;
-  grid-template-columns: 220px 1fr;
+  grid-template-columns: 240px 1fr;
   background: var(--background-base, #f4f6f9);
   font-family: var(--font-family-default, system-ui, sans-serif);
   box-sizing: border-box;
@@ -49,42 +49,49 @@
   color: rgba(255, 255, 255, 0.4);
 }
 
-.sidebar-nav {
-  flex: 1;
-  padding: 14px 8px 8px;
+/* ─── Legend (show/hide toggles) ─────────────────── */
+.legend {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 6px;
 }
 
-/* ─── Nav button ─────────────────────────────────── */
-.nav-btn {
+.legend-chip {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
-  padding: 9px 10px;
-  border: none;
+  padding: 7px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 8px;
-  background: none;
+  background: rgba(255, 255, 255, 0.06);
   cursor: pointer;
-  font-size: 0.875rem;
+  color: #fff;
+  font-size: 0.8rem;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.6);
-  text-align: left;
-  transition: background 0.12s, color 0.12s;
+  transition: opacity 0.12s, background 0.12s;
 
-  &:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.08);
-    color: #fff;
-  }
-
+  &:hover:not(:disabled) { background: rgba(255, 255, 255, 0.12); }
   &:disabled { opacity: 0.35; cursor: default; }
 
-  &.active {
-    background: rgba(255, 255, 255, 0.15);
-    color: #fff;
-    font-weight: 600;
+  &.off {
+    opacity: 0.4;
+    .legend-dot { background: #64748b !important; }
+  }
+
+  .legend-dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  .legend-label { flex: 1; text-align: left; }
+
+  .legend-count {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.75);
   }
 }
 
@@ -119,9 +126,10 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  gap: 12px;
 }
 
-/* ─── Empty state ────────────────────────────────── */
+/* ─── Empty / loading / error state ──────────────── */
 .empty {
   flex: 1;
   display: flex;
@@ -132,32 +140,20 @@
   color: #94a3b8;
 }
 
-/* ─── Tab panel ──────────────────────────────────── */
-.tab-panel {
-  display: grid;
-  grid-template-rows: auto 1fr;
-  gap: 12px;
-  height: 100%;
-  min-height: 0;
-
-  &--events { grid-template-rows: 1fr; }
-}
-
 /* ─── Stats row ──────────────────────────────────── */
 .stats-row {
   display: grid;
+  grid-template-columns: repeat(5, 1fr);
   gap: 10px;
-
-  &--4 { grid-template-columns: repeat(4, 1fr); }
-  &--3 { grid-template-columns: repeat(3, 1fr); }
+  flex-shrink: 0;
 
   @media (max-width: 900px) {
-    &--4, &--3 { grid-template-columns: repeat(2, 1fr); }
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-/* ─── Stat card ──────────────────────────────────── */
 .stat-card {
+  position: relative;
   background: #fff;
   border: 1px solid var(--border-medium, #e2e8f0);
   border-radius: 10px;
@@ -166,13 +162,19 @@
   flex-direction: column;
   gap: 3px;
 
-  &--alert {
-    border-color: #fca5a5;
-    background: #fff5f5;
+  &--total { background: var(--secondary-variant, #022f5e); }
+  &--total .stat-num { color: #fff; }
+  &--total creamy-kit-text { color: rgba(255, 255, 255, 0.7); }
+
+  .stat-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    margin-bottom: 2px;
   }
 
   .stat-num {
-    font-size: 1.75rem;
+    font-size: 1.6rem;
     font-weight: 800;
     color: var(--secondary-variant, #022f5e);
     letter-spacing: -0.03em;
@@ -180,30 +182,15 @@
   }
 }
 
-/* ─── Charts row ─────────────────────────────────── */
-.charts-row {
+/* ─── Charts ─────────────────────────────────────── */
+.charts {
+  flex: 1;
   display: grid;
-  gap: 10px;
+  grid-template-rows: 1fr 1fr;
+  gap: 12px;
   min-height: 0;
-
-  &--3-1    { grid-template-columns: 3fr 1fr; }
-  &--half   { grid-template-columns: 1fr 1fr; }
-  &--thirds { grid-template-columns: repeat(3, 1fr); }
-  &--1-2    { grid-template-columns: 1fr 2fr; }
-
-  @media (max-width: 900px) {
-    &--3-1, &--half, &--thirds, &--1-2 { grid-template-columns: 1fr; }
-  }
 }
 
-/* ─── Chart header ───────────────────────────────── */
-.chart-header {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-/* ─── Chart card ─────────────────────────────────── */
 .chart-card {
   background: #fff;
   border: 1px solid var(--border-medium, #e2e8f0);
@@ -215,77 +202,28 @@
   min-height: 0;
   overflow: hidden;
   box-sizing: border-box;
-
-  &--table { padding-bottom: 0; }
 }
 
-/* ─── Stat icon + tooltip ────────────────────────── */
-.stat-icon {
-  position: relative;
-  display: inline-flex;
+.chart-header {
+  display: flex;
   align-items: center;
-  width: fit-content;
-
-  creamy-kit-tooltip {
-    position: absolute;
-    bottom: calc(100% + 6px);
-    left: 50%;
-    transform: translateX(-50%);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.15s ease;
-    z-index: 20;
-  }
-
-  &:hover creamy-kit-tooltip { opacity: 1; }
+  justify-content: space-between;
+  gap: 10px;
+  flex-shrink: 0;
 }
 
-/* ─── Chart fill ─────────────────────────────────── */
+.chart-hint {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.day-picker {
+  min-width: 110px;
+}
+
 .chart-fill {
   flex: 1;
   position: relative;
   min-height: 0;
 }
-
-/* ─── Events table ───────────────────────────────── */
-.table-scroll {
-  overflow-y: auto;
-  flex: 1;
-  min-height: 0;
-  border-radius: 0 0 10px 10px;
-}
-
-.events-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.8125rem;
-
-  thead tr { background: #f8fafc; position: sticky; top: 0; z-index: 1; }
-
-  th {
-    padding: 8px 14px;
-    text-align: left;
-    font-weight: 600;
-    color: #94a3b8;
-    font-size: 0.68rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    white-space: nowrap;
-    border-bottom: 1px solid var(--border-medium, #e2e8f0);
-  }
-
-  tbody tr {
-    border-top: 1px solid #f1f5f9;
-    transition: background 0.1s;
-    &:hover { background: #f8fafc; }
-  }
-
-  td {
-    padding: 8px 14px;
-    color: #475569;
-    vertical-align: middle;
-  }
-}
-
-.mono  { font-family: monospace; font-size: 0.775rem; color: #94a3b8 !important; }
-.muted { white-space: nowrap; color: #b0bec5 !important; }

@@ -8,11 +8,12 @@ Desenvolvido com **Angular 18** + **Creamy Kit** + **Chart.js**
 
 ## ✨ Features
 
-- 📊 **4 abas de visualização**: Visão Geral, Sessões, HTTP, Eventos
-- 📈 **Gráficos interativos**: Timeline, distribuição de ações, status HTTP, top páginas
-- 🔍 **Filtro por aplicação**: Selecione qual app analisar na sidebar
-- 🔄 **Dados em tempo real**: Sincroniza com backend via API
-- 📱 **Responsivo**: Design adaptativo para desktop, tablet e mobile
+- 📊 **Eventos por dia**: barras empilhadas por dia, com cores por tipo (clique, page view, HTTP, sessão)
+- 🕐 **Distribuição nas 24h**: barras verticais por hora (0–23h) de um dia selecionável
+- 👁️ **Mostrar/esconder tipos**: legenda lateral com toggle, compartilhada pelos dois gráficos
+- 🔍 **Filtro por aplicação**: dropdown na sidebar, alimentado por `GET /apps`
+- 🔄 **Uma chamada por app**: busca tudo (events, http-calls, sessions) via `GET /apps/:appID`
+- 📱 **Responsivo**: layout adaptativo para desktop, tablet e mobile
 
 ## 🚀 Quick Start
 
@@ -58,31 +59,12 @@ Para alterar a URL do backend em desenvolvimento:
 const API_BASE_URL = 'http://localhost:3000';
 ```
 
-## 📊 Abas Disponíveis
+## 📊 Visão do dashboard
 
-### Visão Geral
-- **Total de eventos** (cliques + page views)
-- **Sessões** no período
-- **Total de cliques**
-- **Carregamentos de página**
-- Gráficos: Timeline de eventos, Distribuição cliques vs page views
-
-### Sessões
-- **Total de sessões**
-- **Tempo médio na página** (segundos)
-- **Page views** no período
-- Gráficos: Dispositivos, Origem do tráfego, Top páginas
-
-### HTTP
-- **Total de chamadas HTTP**
-- **Taxa de erros** (requisições 4xx e 5xx)
-- **Duração média** de resposta
-- Gráficos: Status das respostas, Tempo por endpoint
-
-### Eventos
-- Tabela completa de todos os eventos (cliques e page views)
-- Gráfico: Top páginas com mais eventos
-- Filtro por: tipo de ação, localização, data/hora
+- **Cards de totais**: total geral + um por tipo (clique, page view, HTTP, sessão)
+- **Eventos por dia**: barras empilhadas, um dia por coluna, cores por tipo
+- **Distribuição nas 24h**: barras por hora (0–23h) do dia selecionado no dropdown
+- **Legenda lateral**: liga/desliga cada tipo; o toggle afeta os dois gráficos ao mesmo tempo
 
 ## 📦 Dependências
 
@@ -95,20 +77,22 @@ const API_BASE_URL = 'http://localhost:3000';
 ## 🔄 Fluxo de Dados
 
 ```
-Dashboard → API Service → Backend (/events, /http-calls, /sessions)
+Dashboard → API Service → Backend
+                            ├─ GET /apps           (lista de apps p/ o dropdown)
+                            └─ GET /apps/:appID     (events + http-calls + sessions)
                 ↓
         MongoDB (Produção) / JSON (Desenvolvimento)
 ```
 
-O dashboard faz um único `forkJoin` ao carregar para buscar os 3 collections em paralelo:
+Ao selecionar um app, o dashboard faz **uma única chamada** a `GET /apps/:appID`,
+que já devolve as três coleções filtradas pelo `appID`. O serviço normaliza tudo
+em uma lista única de atividades (`{ type, timestamp }`):
 
 ```typescript
-getAll(): Observable<AnalyticsData> {
-  return forkJoin({
-    events: this.getEvents(),          // POST /events
-    httpCalls: this.getHttpCalls(),    // POST /http-calls
-    sessions: this.getSessions()       // POST /sessions
-  });
+getAppData(appID: string): Observable<AppData> {
+  return this.http
+    .get<RawAppData>(`${API_BASE_URL}/apps/${encodeURIComponent(appID)}`)
+    .pipe(map((raw) => this.normalize(raw))); // events/http/sessions → activities
 }
 ```
 
@@ -118,20 +102,17 @@ getAll(): Observable<AnalyticsData> {
 src/
 ├── app/
 │   ├── dashboard/
-│   │   ├── dashboard.component.ts      # Lógica principal, signals
-│   │   ├── dashboard.component.html    # Template (4 abas)
+│   │   ├── dashboard.component.ts      # Lógica: signals, agrupamentos por dia/hora
+│   │   ├── dashboard.component.html    # Template (cards + 2 gráficos + legenda)
 │   │   ├── dashboard.component.scss    # Estilos
 │   │   └── components/
-│   │       ├── action-chart/           # Gráfico de cliques vs page views
-│   │       ├── device-chart/           # Gráfico de dispositivos
-│   │       ├── http-status-chart/      # Gráfico de status HTTP
-│   │       ├── location-chart/         # Gráfico de páginas top
-│   │       ├── referrer-chart/         # Gráfico de origem de tráfego
-│   │       ├── response-time-chart/    # Gráfico de tempo por endpoint
-│   │       └── timeline-chart/         # Gráfico temporal de eventos
-│   ├── models/                         # Interfaces de tipos
+│   │       └── stacked-bar-chart/      # Gráfico de barras empilhadas reutilizável
+│   ├── models/
+│   │   ├── activity.ts                 # Tipo unificado de atividade + cores
+│   │   ├── http-call-event.model.ts
+│   │   └── session.model.ts
 │   ├── services/
-│   │   └── analytics-api.service.ts    # Chamadas HTTP ao backend
+│   │   └── analytics-api.service.ts    # GET /apps e GET /apps/:appID
 │   ├── app.routes.ts                   # Roteamento (/:appID/dashboard)
 │   └── app.config.ts                   # Configuração do app
 ├── main.ts                             # Entry point
@@ -145,13 +126,11 @@ O projeto é deployado automaticamente no **GitHub Pages** via GitHub Actions a 
 
 URL: https://marinellibr.github.io/data-analytics-dashboard
 
-## 🧪 Teste Local com Mock Data
+## 🧪 Teste Local
 
-Dados de exemplo já estão inclusos via computados signals. Para testar com dados reais:
-
-1. Certifique-se de que o backend está rodando
+1. Suba o backend (com MongoDB ou storage JSON local)
 2. A lib envia eventos para `/events`, `/http-calls`, `/sessions`
-3. O dashboard será automaticamente atualizado com os novos dados
+3. Selecione o app no dropdown — o dashboard busca via `GET /apps/:appID`
 
 ## 📡 Integração com a Lib
 

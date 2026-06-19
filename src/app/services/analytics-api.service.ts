@@ -1,64 +1,67 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, forkJoin, map } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
-import { AnalyticsEvent, EventAction } from '../models/analytics-event';
 import { HttpCallEvent } from '../models/http-call-event.model';
 import { Session } from '../models/session.model';
+import { Activity, ActivityType, TypeCounts, emptyCounts } from '../models/activity';
 
 const API_BASE_URL = 'https://data-analytics-backend-two.vercel.app';
 
 // Shape stored by the backend / sent by the lib: events carry a `type`
-// discriminator ('click' | 'pageview'), which the dashboard surfaces as `action`.
+// discriminator ('click' | 'pageview').
 interface RawEvent {
   appID: string;
   sessionID: string;
-  type: EventAction;
+  type: 'click' | 'pageview';
   location: string;
   timestamp: string;
   timeOnPage?: number;
   element?: string;
 }
 
-export interface AnalyticsData {
-  events: AnalyticsEvent[];
+// The aggregated payload returned by GET /apps/:appID
+interface RawAppData {
+  appID: string;
+  events: RawEvent[];
   httpCalls: HttpCallEvent[];
   sessions: Session[];
+}
+
+// What the dashboard consumes: a single normalized activity stream plus
+// per-type totals.
+export interface AppData {
+  appID: string;
+  activities: Activity[];
+  counts: TypeCounts;
 }
 
 @Injectable({ providedIn: 'root' })
 export class AnalyticsApiService {
   private http = inject(HttpClient);
 
-  getEvents(): Observable<AnalyticsEvent[]> {
-    return this.http.get<RawEvent[]>(`${API_BASE_URL}/events`).pipe(
-      map((events) =>
-        events.map((e) => ({
-          appID: e.appID,
-          sessionID: e.sessionID,
-          action: e.type,
-          location: e.location,
-          timestamp: e.timestamp,
-          timeOnPage: e.timeOnPage,
-        })),
-      ),
-    );
+  // List of every app that has data, for the app picker.
+  getApps(): Observable<string[]> {
+    return this.http.get<string[]>(`${API_BASE_URL}/apps`);
   }
 
-  getHttpCalls(): Observable<HttpCallEvent[]> {
-    return this.http.get<HttpCallEvent[]>(`${API_BASE_URL}/http-calls`);
+  // All of a single app's data in one request, normalized into activities.
+  getAppData(appID: string): Observable<AppData> {
+    return this.http
+      .get<RawAppData>(`${API_BASE_URL}/apps/${encodeURIComponent(appID)}`)
+      .pipe(map((raw) => this.normalize(raw)));
   }
 
-  getSessions(): Observable<Session[]> {
-    return this.http.get<Session[]>(`${API_BASE_URL}/sessions`);
-  }
+  private normalize(raw: RawAppData): AppData {
+    const activities: Activity[] = [
+      ...raw.events.map((e) => ({ type: e.type as ActivityType, timestamp: e.timestamp })),
+      ...raw.httpCalls.map((h) => ({ type: 'http' as ActivityType, timestamp: h.timestamp })),
+      ...raw.sessions.map((s) => ({ type: 'session' as ActivityType, timestamp: s.startTime })),
+    ];
 
-  // Fetches every collection in parallel so the dashboard can populate at once
-  getAll(): Observable<AnalyticsData> {
-    return forkJoin({
-      events: this.getEvents(),
-      httpCalls: this.getHttpCalls(),
-      sessions: this.getSessions(),
-    });
+    const counts = emptyCounts();
+    for (const a of activities) counts[a.type]++;
+
+    return { appID: raw.appID, activities, counts };
   }
 }
