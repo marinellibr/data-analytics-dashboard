@@ -1,0 +1,51 @@
+<div class="table-scroll">
+  <table class="detail-table">
+    <thead>
+      <tr>
+        <th>Hora</th>
+        <th>Tipo</th>
+        <th>Detalhes</th>
+        <th>Sessão</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (a of items(); track $index) {
+        <tr>
+          <td class="mono nowrap">{{ timeOf(a.timestamp) }}</td>
+          <td>
+            <span class="type-tag" [style.background]="typeColor(a.type) + '22'" [style.color]="typeColor(a.type)">
+              <span class="type-dot" [style.background]="typeColor(a.type)"></span>
+              {{ typeLabel(a.type) }}
+            </span>
+          </td>
+          <td class="detail-cell">
+            @switch (a.type) {
+              @case ('click') {
+                <span class="mono">{{ a.location }}</span>
+                @if (a.element) { <span class="sub">→ {{ a.element }}</span> }
+              }
+              @case ('pageview') {
+                <span class="mono">{{ a.location }}</span>
+                @if (a.timeOnPage != null) { <span class="sub">{{ a.timeOnPage }} ms na página</span> }
+              }
+              @case ('http') {
+                <span class="method">{{ a.method }}</span>
+                <span class="mono">{{ a.endpoint }}</span>
+                <span class="sub"
+                  [class.ok]="(a.status ?? 0) < 400"
+                  [class.err]="(a.status ?? 0) >= 400">
+                  {{ a.status }} · {{ a.duration }} ms
+                </span>
+              }
+              @case ('session') {
+                <span>{{ a.device }} · {{ a.browser }}</span>
+                <span class="sub">ref: {{ a.referrer }}@if (a.userID) { · user: {{ a.userID }} }</span>
+              }
+            }
+          </td>
+          <td class="mono muted nowrap">{{ a.sessionID || '—' }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

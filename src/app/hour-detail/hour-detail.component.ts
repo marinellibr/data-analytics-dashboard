@@ -6,11 +6,11 @@ import { map, switchMap, tap, catchError } from 'rxjs/operators';
 import { IconComponent, TextComponent, TagComponent } from 'creamy-kit';
 
 import { AnalyticsApiService, AppData } from '../services/analytics-api.service';
-import { Activity, ActivityType, ACTIVITY_TYPES, emptyCounts, localDay, localHour, localTime } from '../models/activity';
+import { Activity, ACTIVITY_TYPES, emptyCounts, localDay, localHour } from '../models/activity';
+import { ActivityTableComponent } from '../components/activity-table/activity-table.component';
 
 const EMPTY: AppData = { appID: '', activities: [], counts: emptyCounts() };
 
-// "2026-06-18" -> "18/06/2026"
 const formatDate = (iso: string): string => {
   const [y, m, d] = iso.split('-');
   return `${d}/${m}/${y}`;
@@ -18,7 +18,7 @@ const formatDate = (iso: string): string => {
 
 @Component({
   selector: 'app-hour-detail',
-  imports: [RouterLink, IconComponent, TextComponent, TagComponent],
+  imports: [RouterLink, IconComponent, TextComponent, TagComponent, ActivityTableComponent],
   templateUrl: './hour-detail.component.html',
   styleUrl: './hour-detail.component.scss',
 })
@@ -67,7 +67,6 @@ export class HourDetailComponent {
     { initialValue: EMPTY },
   );
 
-  // Activities that fall inside the selected day + hour, sorted by time.
   readonly items = computed<Activity[]>(() => {
     const day = this.day();
     const hour = this.hour();
@@ -84,7 +83,6 @@ export class HourDetailComponent {
     return c;
   });
 
-  // ── Derived metrics for richer context ────────────────────────────────────
   readonly avgTimeOnPage = computed(() => {
     const views = this.items().filter((a) => a.type === 'pageview' && a.timeOnPage != null);
     if (!views.length) return 0;
@@ -109,22 +107,9 @@ export class HourDetailComponent {
     return set.size;
   });
 
-  // ── Labels ────────────────────────────────────────────────────────────────
   readonly dateLabel = computed(() => (this.day() ? formatDate(this.day()) : ''));
   readonly hourRange = computed(() => {
     const h = String(this.hour()).padStart(2, '0');
     return `${h}:00 – ${h}:59 (horário local)`;
   });
-
-  typeColor(type: ActivityType): string {
-    return ACTIVITY_TYPES.find((t) => t.key === type)?.color ?? '#64748b';
-  }
-  typeLabel(type: ActivityType): string {
-    return ACTIVITY_TYPES.find((t) => t.key === type)?.label ?? type;
-  }
-
-  // ISO (UTC) -> local "HH:mm:ss"
-  timeOf(iso: string): string {
-    return localTime(iso);
-  }
 }

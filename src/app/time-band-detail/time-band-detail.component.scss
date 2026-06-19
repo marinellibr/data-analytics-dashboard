@@ -110,34 +110,27 @@
   }
 }
 
-/* ─── Metrics row ────────────────────────────────── */
-.metrics-row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  flex-shrink: 0;
-
-  @media (max-width: 900px) { grid-template-columns: repeat(2, 1fr); }
-}
-
-.metric {
+/* ─── Mini chart ─────────────────────────────────── */
+.chart-card {
   background: #fff;
   border: 1px solid var(--border-medium, #e2e8f0);
   border-radius: 10px;
-  padding: 10px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+  padding: 14px 16px 12px;
+  flex-shrink: 0;
+}
 
-  &--alert { border-color: #fca5a5; background: #fff5f5; }
+.chart-title {
+  margin: 0 0 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
 
-  .metric-label { font-size: 0.68rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
-  .metric-value {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--secondary-variant, #022f5e);
-    small { font-size: 0.7rem; color: #94a3b8; font-weight: 600; }
-  }
+.chart-wrap {
+  position: relative;
+  height: 160px;
 }
 
 /* ─── Table ──────────────────────────────────────── */

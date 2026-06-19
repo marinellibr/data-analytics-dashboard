@@ -7,11 +7,11 @@
       Voltar
     </a>
     <div class="header-title">
-      <span class="page-title">Detalhes da hora</span>
+      <span class="page-title">Detalhes da faixa de horário</span>
       <div class="header-tags">
         @if (appID()) { <creamy-kit-tag color="neutral">{{ appID() }}</creamy-kit-tag> }
         <creamy-kit-tag color="primary">{{ dateLabel() }}</creamy-kit-tag>
-        <creamy-kit-tag color="success">{{ hourRange() }}</creamy-kit-tag>
+        <creamy-kit-tag color="success">{{ bandConfig().label }} · {{ bandConfig().range }}</creamy-kit-tag>
       </div>
     </div>
   </header>
@@ -31,7 +31,7 @@
     } @else if (!total()) {
       <div class="empty">
         <creamy-kit-icon name="information_base" [size]="44" color="#cbd5e1" />
-        <creamy-kit-text type="body">Nenhum evento registrado nesta hora</creamy-kit-text>
+        <creamy-kit-text type="body">Nenhum evento registrado nesta faixa de horário</creamy-kit-text>
       </div>
     } @else {
 
@@ -39,7 +39,7 @@
       <div class="stats-row">
         <div class="stat-card stat-card--total">
           <span class="stat-num">{{ total() }}</span>
-          <creamy-kit-text type="label" size="xsmall" color="variant">Eventos na hora</creamy-kit-text>
+          <creamy-kit-text type="label" size="xsmall" color="variant">Eventos na faixa</creamy-kit-text>
         </div>
         @for (t of types; track t.key) {
           <div class="stat-card">
@@ -50,23 +50,15 @@
         }
       </div>
 
-      <!-- Derived metrics -->
-      <div class="metrics-row">
-        <div class="metric">
-          <span class="metric-label">Sessões únicas</span>
-          <span class="metric-value">{{ uniqueSessions() }}</span>
-        </div>
-        <div class="metric">
-          <span class="metric-label">Tempo médio na página</span>
-          <span class="metric-value">{{ avgTimeOnPage() }} <small>ms</small></span>
-        </div>
-        <div class="metric">
-          <span class="metric-label">Duração média HTTP</span>
-          <span class="metric-value">{{ avgDuration() }} <small>ms</small></span>
-        </div>
-        <div class="metric" [class.metric--alert]="errorRate() > 10">
-          <span class="metric-label">Taxa de erro HTTP</span>
-          <span class="metric-value">{{ errorRate() }}<small>%</small></span>
+      <!-- Per-hour mini chart -->
+      <div class="chart-card">
+        <p class="chart-title">Eventos por hora — clique para ver detalhes</p>
+        <div class="chart-wrap">
+          <app-stacked-bar-chart
+            [labels]="hourLabels()"
+            [series]="hourSeries()"
+            (barClick)="onHourBarClick($event)"
+          />
         </div>
       </div>
 

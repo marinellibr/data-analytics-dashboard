@@ -169,11 +169,18 @@ export class DashboardComponent {
     this.selectedDay.set(day);
   }
 
-  // Clicking an hour bar opens the detailed breakdown for that hour. The bar
-  // index maps 1:1 to the hour (labels are 00h..23h in order).
+  // Clicking an hour bar opens the time-band detail for that hour's band.
+  // The band route then lets the user drill into individual hours.
   onHourClick(hour: number): void {
     const day = this.selectedDay();
     if (!day) return;
-    this.router.navigate(['/', this.appID(), 'dashboard', day, hour]);
+    this.router.navigate(['/', this.appID(), 'dashboard', day, 'band', this.hourToBand(hour)]);
+  }
+
+  private hourToBand(hour: number): string {
+    if (hour < 6) return 'madrugada';
+    if (hour < 12) return 'manha';
+    if (hour < 18) return 'tarde';
+    return 'noite';
   }
 }
