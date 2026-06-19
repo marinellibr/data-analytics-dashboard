@@ -1,23 +1,48 @@
+<!-- Tab bar -->
+<div class="tab-bar">
+  <button class="tab" [class.tab--active]="activeTab() === 'all'" (click)="setTab('all')">
+    Todos
+    <span class="tab-count">{{ tabCounts()['all'] }}</span>
+  </button>
+  @for (t of types; track t.key) {
+    @if (tabCounts()[t.key] > 0) {
+      <button
+        class="tab"
+        [class.tab--active]="activeTab() === t.key"
+        [style.--tab-color]="t.color"
+        (click)="setTab(t.key)"
+      >
+        <span class="tab-dot" [style.background]="t.color"></span>
+        {{ t.label }}
+        <span class="tab-count">{{ tabCounts()[t.key] }}</span>
+      </button>
+    }
+  }
+</div>
+
+<!-- Table -->
 <div class="table-scroll">
   <table class="detail-table">
     <thead>
       <tr>
         <th>Hora</th>
-        <th>Tipo</th>
+        @if (showTypeColumn()) { <th>Tipo</th> }
         <th>Detalhes</th>
         <th>Sessão</th>
       </tr>
     </thead>
     <tbody>
-      @for (a of items(); track $index) {
+      @for (a of visibleItems(); track $index) {
         <tr>
           <td class="mono nowrap">{{ timeOf(a.timestamp) }}</td>
-          <td>
-            <span class="type-tag" [style.background]="typeColor(a.type) + '22'" [style.color]="typeColor(a.type)">
-              <span class="type-dot" [style.background]="typeColor(a.type)"></span>
-              {{ typeLabel(a.type) }}
-            </span>
-          </td>
+          @if (showTypeColumn()) {
+            <td>
+              <span class="type-tag" [style.background]="typeColor(a.type) + '22'" [style.color]="typeColor(a.type)">
+                <span class="type-dot" [style.background]="typeColor(a.type)"></span>
+                {{ typeLabel(a.type) }}
+              </span>
+            </td>
+          }
           <td class="detail-cell">
             @switch (a.type) {
               @case ('click') {
@@ -44,6 +69,11 @@
             }
           </td>
           <td class="mono muted nowrap">{{ a.sessionID || '—' }}</td>
+        </tr>
+      }
+      @empty {
+        <tr>
+          <td [attr.colspan]="showTypeColumn() ? 4 : 3" class="empty-row">Nenhum registro nesta aba</td>
         </tr>
       }
     </tbody>

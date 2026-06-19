@@ -97,7 +97,15 @@
 
   &--total { background: var(--secondary-variant, #022f5e); }
   &--total .stat-num { color: #fff; }
-  &--total creamy-kit-text { color: rgba(255, 255, 255, 0.7); }
+  &--total .stat-label { color: rgba(255, 255, 255, 0.7); }
+
+  .stat-label {
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
 
   .stat-dot { width: 10px; height: 10px; border-radius: 3px; margin-bottom: 2px; }
 
