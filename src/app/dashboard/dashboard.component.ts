@@ -169,4 +169,12 @@ export class DashboardComponent {
   onDayChange(day: string): void {
     this.selectedDay.set(day);
   }
+
+  // Clicking an hour bar opens the detailed breakdown for that hour. The bar
+  // index maps 1:1 to the hour (labels are 00h..23h in order).
+  onHourClick(hour: number): void {
+    const day = this.selectedDay();
+    if (!day) return;
+    this.router.navigate(['/', this.appID(), 'dashboard', day, hour]);
+  }
 }

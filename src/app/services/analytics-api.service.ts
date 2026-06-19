@@ -54,9 +54,33 @@ export class AnalyticsApiService {
 
   private normalize(raw: RawAppData): AppData {
     const activities: Activity[] = [
-      ...raw.events.map((e) => ({ type: e.type as ActivityType, timestamp: e.timestamp })),
-      ...raw.httpCalls.map((h) => ({ type: 'http' as ActivityType, timestamp: h.timestamp })),
-      ...raw.sessions.map((s) => ({ type: 'session' as ActivityType, timestamp: s.startTime })),
+      ...raw.events.map((e) => ({
+        type: e.type as ActivityType,
+        timestamp: e.timestamp,
+        sessionID: e.sessionID,
+        location: e.location,
+        element: e.element,
+        timeOnPage: e.timeOnPage,
+      })),
+      ...raw.httpCalls.map((h) => ({
+        type: 'http' as ActivityType,
+        timestamp: h.timestamp,
+        sessionID: h.sessionID,
+        endpoint: h.endpoint,
+        method: h.method,
+        status: h.status,
+        duration: h.duration,
+      })),
+      ...raw.sessions.map((s) => ({
+        type: 'session' as ActivityType,
+        timestamp: s.startTime,
+        sessionID: s.sessionID,
+        device: s.context?.device,
+        browser: s.context?.browser,
+        referrer: s.context?.referrer,
+        userID: s.userID,
+        endTime: s.endTime,
+      })),
     ];
 
     const counts = emptyCounts();

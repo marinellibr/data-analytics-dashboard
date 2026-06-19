@@ -110,8 +110,13 @@
               />
             </div>
             <div class="chart-fill">
-              <app-stacked-bar-chart [labels]="hourlyLabels" [series]="hourlySeries()" />
+              <app-stacked-bar-chart
+                [labels]="hourlyLabels"
+                [series]="hourlySeries()"
+                (barClick)="onHourClick($event)"
+              />
             </div>
+            <p class="chart-foot">Clique em uma barra para ver os detalhes da hora</p>
           </div>
 
         </div>

@@ -1,0 +1,131 @@
+<div class="detail-shell">
+
+  <!-- Header -->
+  <header class="detail-header">
+    <a class="back-btn" [routerLink]="['/', appID(), 'dashboard']">
+      <span class="back-arrow" aria-hidden="true">←</span>
+      Voltar
+    </a>
+    <div class="header-title">
+      <span class="page-title">Detalhes da hora</span>
+      <div class="header-tags">
+        @if (appID()) { <creamy-kit-tag color="neutral">{{ appID() }}</creamy-kit-tag> }
+        <creamy-kit-tag color="primary">{{ dateLabel() }}</creamy-kit-tag>
+        <creamy-kit-tag color="success">{{ hourRange() }}</creamy-kit-tag>
+      </div>
+    </div>
+  </header>
+
+  <main class="detail-content">
+
+    @if (loading()) {
+      <div class="empty">
+        <creamy-kit-icon name="loading_base" [size]="40" color="#cbd5e1" />
+        <creamy-kit-text type="body">Carregando…</creamy-kit-text>
+      </div>
+    } @else if (loadError()) {
+      <div class="empty">
+        <creamy-kit-icon name="warning_base" [size]="44" color="#ef4444" />
+        <creamy-kit-text type="body">Não foi possível carregar os dados</creamy-kit-text>
+      </div>
+    } @else if (!total()) {
+      <div class="empty">
+        <creamy-kit-icon name="information_base" [size]="44" color="#cbd5e1" />
+        <creamy-kit-text type="body">Nenhum evento registrado nesta hora</creamy-kit-text>
+      </div>
+    } @else {
+
+      <!-- Summary cards -->
+      <div class="stats-row">
+        <div class="stat-card stat-card--total">
+          <span class="stat-num">{{ total() }}</span>
+          <creamy-kit-text type="label" size="xsmall" color="variant">Eventos na hora</creamy-kit-text>
+        </div>
+        @for (t of types; track t.key) {
+          <div class="stat-card">
+            <span class="stat-dot" [style.background]="t.color"></span>
+            <span class="stat-num">{{ counts()[t.key] }}</span>
+            <creamy-kit-text type="label" size="xsmall" color="variant">{{ t.label }}</creamy-kit-text>
+          </div>
+        }
+      </div>
+
+      <!-- Derived metrics -->
+      <div class="metrics-row">
+        <div class="metric">
+          <span class="metric-label">Sessões únicas</span>
+          <span class="metric-value">{{ uniqueSessions() }}</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Tempo médio na página</span>
+          <span class="metric-value">{{ avgTimeOnPage() }} <small>ms</small></span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Duração média HTTP</span>
+          <span class="metric-value">{{ avgDuration() }} <small>ms</small></span>
+        </div>
+        <div class="metric" [class.metric--alert]="errorRate() > 10">
+          <span class="metric-label">Taxa de erro HTTP</span>
+          <span class="metric-value">{{ errorRate() }}<small>%</small></span>
+        </div>
+      </div>
+
+      <!-- Detail table -->
+      <div class="table-card">
+        <div class="table-scroll">
+          <table class="detail-table">
+            <thead>
+              <tr>
+                <th>Hora</th>
+                <th>Tipo</th>
+                <th>Detalhes</th>
+                <th>Sessão</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (a of items(); track $index) {
+                <tr>
+                  <td class="mono nowrap">{{ timeOf(a.timestamp) }}</td>
+                  <td>
+                    <span class="type-tag" [style.background]="typeColor(a.type) + '22'" [style.color]="typeColor(a.type)">
+                      <span class="type-dot" [style.background]="typeColor(a.type)"></span>
+                      {{ typeLabel(a.type) }}
+                    </span>
+                  </td>
+                  <td class="detail-cell">
+                    @switch (a.type) {
+                      @case ('click') {
+                        <span class="mono">{{ a.location }}</span>
+                        @if (a.element) { <span class="sub">→ {{ a.element }}</span> }
+                      }
+                      @case ('pageview') {
+                        <span class="mono">{{ a.location }}</span>
+                        @if (a.timeOnPage != null) { <span class="sub">{{ a.timeOnPage }} ms na página</span> }
+                      }
+                      @case ('http') {
+                        <span class="method">{{ a.method }}</span>
+                        <span class="mono">{{ a.endpoint }}</span>
+                        <span class="sub"
+                          [class.ok]="(a.status ?? 0) < 400"
+                          [class.err]="(a.status ?? 0) >= 400">
+                          {{ a.status }} · {{ a.duration }} ms
+                        </span>
+                      }
+                      @case ('session') {
+                        <span>{{ a.device }} · {{ a.browser }}</span>
+                        <span class="sub">ref: {{ a.referrer }}@if (a.userID) { · user: {{ a.userID }} }</span>
+                      }
+                    }
+                  </td>
+                  <td class="mono muted nowrap">{{ a.sessionID || '—' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    }
+  </main>
+
+</div>

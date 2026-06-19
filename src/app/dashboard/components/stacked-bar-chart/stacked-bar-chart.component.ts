@@ -1,6 +1,6 @@
 import {
-  Component, DestroyRef, ElementRef, Injector, ViewChild,
-  afterNextRender, effect, inject, input,
+  Component, DestroyRef, ElementRef, Injector, NgZone, ViewChild,
+  afterNextRender, effect, inject, input, output,
 } from '@angular/core';
 import { BarController, BarElement, CategoryScale, Chart, LinearScale, Tooltip } from 'chart.js';
 
@@ -24,11 +24,14 @@ export interface ChartSeries {
 export class StackedBarChartComponent {
   readonly labels = input.required<string[]>();
   readonly series = input.required<ChartSeries[]>();
+  // Emits the index of the clicked category (e.g. the hour or day column).
+  readonly barClick = output<number>();
 
   @ViewChild('canvas') private canvas!: ElementRef<HTMLCanvasElement>;
   private chart?: Chart<'bar'>;
   private injector = inject(Injector);
   private destroyRef = inject(DestroyRef);
+  private zone = inject(NgZone);
 
   constructor() {
     afterNextRender(() => {
@@ -41,6 +44,15 @@ export class StackedBarChartComponent {
           plugins: {
             legend: { display: false },
             tooltip: { mode: 'index', intersect: false },
+          },
+          onClick: (_evt, elements) => {
+            if (!elements.length) return;
+            const index = elements[0].index;
+            this.zone.run(() => this.barClick.emit(index));
+          },
+          onHover: (evt, elements) => {
+            const target = evt.native?.target as HTMLElement | null;
+            if (target) target.style.cursor = elements.length ? 'pointer' : 'default';
           },
           scales: {
             x: {
