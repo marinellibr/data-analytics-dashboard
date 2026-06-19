@@ -1,4 +1,5 @@
-import { Component, computed, input, signal } from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { Activity, ActivityType, ACTIVITY_TYPES, localTime } from '../../models/activity';
 
 type TabKey = 'all' | ActivityType;
@@ -11,7 +12,11 @@ type SortDir = 'asc' | 'desc';
   styleUrl: './activity-table.component.scss',
 })
 export class ActivityTableComponent {
+  private router = inject(Router);
+
   readonly items = input.required<Activity[]>();
+  // When set, the session cell becomes a link to that app's session detail.
+  readonly appID = input<string>('');
 
   readonly types = ACTIVITY_TYPES;
   readonly activeTab = signal<TabKey>('all');
@@ -41,6 +46,12 @@ export class ActivityTableComponent {
 
   toggleSort(): void {
     this.sortDir.update((d) => (d === 'asc' ? 'desc' : 'asc'));
+  }
+
+  openSession(sessionID: string): void {
+    const app = this.appID();
+    if (!app) return;
+    this.router.navigate(['/', app, 'dashboard', 'session', sessionID]);
   }
 
   typeColor(type: ActivityType): string {

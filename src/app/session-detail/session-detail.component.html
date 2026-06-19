@@ -7,11 +7,10 @@
       Voltar
     </a>
     <div class="header-title">
-      <span class="page-title">Detalhes da hora</span>
+      <span class="page-title">Detalhes da sessão</span>
       <div class="header-tags">
         @if (appID()) { <creamy-kit-tag color="neutral">{{ appID() }}</creamy-kit-tag> }
-        <creamy-kit-tag color="primary">{{ dateLabel() }}</creamy-kit-tag>
-        <creamy-kit-tag color="success">{{ hourRange() }}</creamy-kit-tag>
+        <creamy-kit-tag color="primary">{{ sessionID() }}</creamy-kit-tag>
       </div>
     </div>
   </header>
@@ -31,7 +30,7 @@
     } @else if (!total()) {
       <div class="empty">
         <creamy-kit-icon name="information_base" [size]="44" color="#cbd5e1" />
-        <creamy-kit-text type="body">Nenhum evento registrado nesta hora</creamy-kit-text>
+        <creamy-kit-text type="body">Nenhum evento registrado nesta sessão</creamy-kit-text>
       </div>
     } @else {
 
@@ -39,7 +38,7 @@
       <div class="stats-row">
         <div class="stat-card stat-card--total">
           <span class="stat-num">{{ total() }}</span>
-          <span class="stat-label">Eventos na hora</span>
+          <span class="stat-label">Eventos na sessão</span>
         </div>
         @for (t of types; track t.key) {
           <div class="stat-card">
@@ -50,11 +49,33 @@
         }
       </div>
 
-      <!-- Derived metrics -->
+      <!-- Session context + metrics -->
       <div class="metrics-row">
+        @if (session(); as s) {
+          <div class="metric">
+            <span class="metric-label">Dispositivo</span>
+            <span class="metric-value">{{ s.device || '—' }}</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Navegador</span>
+            <span class="metric-value">{{ s.browser || '—' }}</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Origem</span>
+            <span class="metric-value">{{ s.referrer || '—' }}</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Usuário</span>
+            <span class="metric-value">{{ s.userID || '—' }}</span>
+          </div>
+        }
         <div class="metric">
-          <span class="metric-label">Sessões únicas</span>
-          <span class="metric-value">{{ uniqueSessions() }}</span>
+          <span class="metric-label">Início</span>
+          <span class="metric-value">{{ startedAt() }}</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Duração</span>
+          <span class="metric-value">{{ duration() }}</span>
         </div>
         <div class="metric">
           <span class="metric-label">Tempo médio na página</span>

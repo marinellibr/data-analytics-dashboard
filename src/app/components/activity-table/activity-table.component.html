@@ -71,7 +71,13 @@
               }
             }
           </td>
-          <td class="mono muted nowrap">{{ a.sessionID || '—' }}</td>
+          <td class="nowrap">
+            @if (a.sessionID && appID()) {
+              <button type="button" class="session-link mono" (click)="openSession(a.sessionID)">{{ a.sessionID }}</button>
+            } @else {
+              <span class="mono muted">{{ a.sessionID || '—' }}</span>
+            }
+          </td>
         </tr>
       }
       @empty {
