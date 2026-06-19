@@ -2,6 +2,7 @@ import { Component, computed, input, signal } from '@angular/core';
 import { Activity, ActivityType, ACTIVITY_TYPES, localTime } from '../../models/activity';
 
 type TabKey = 'all' | ActivityType;
+type SortDir = 'asc' | 'desc';
 
 @Component({
   selector: 'app-activity-table',
@@ -14,6 +15,7 @@ export class ActivityTableComponent {
 
   readonly types = ACTIVITY_TYPES;
   readonly activeTab = signal<TabKey>('all');
+  readonly sortDir = signal<SortDir>('asc');
 
   readonly tabCounts = computed(() => {
     const counts: Record<string, number> = { all: this.items().length };
@@ -25,13 +27,20 @@ export class ActivityTableComponent {
 
   readonly visibleItems = computed<Activity[]>(() => {
     const tab = this.activeTab();
-    return tab === 'all' ? this.items() : this.items().filter((a) => a.type === tab);
+    const dir = this.sortDir();
+    const filtered = tab === 'all' ? this.items() : this.items().filter((a) => a.type === tab);
+    const sorted = [...filtered].sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+    return dir === 'asc' ? sorted : sorted.reverse();
   });
 
   readonly showTypeColumn = computed(() => this.activeTab() === 'all');
 
   setTab(key: TabKey): void {
     this.activeTab.set(key);
+  }
+
+  toggleSort(): void {
+    this.sortDir.update((d) => (d === 'asc' ? 'desc' : 'asc'));
   }
 
   typeColor(type: ActivityType): string {

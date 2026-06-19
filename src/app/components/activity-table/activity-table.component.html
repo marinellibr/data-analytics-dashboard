@@ -25,7 +25,10 @@
   <table class="detail-table">
     <thead>
       <tr>
-        <th>Hora</th>
+        <th class="th-sort" (click)="toggleSort()" [attr.aria-sort]="sortDir() === 'asc' ? 'ascending' : 'descending'">
+          Hora
+          <span class="sort-arrow">{{ sortDir() === 'asc' ? '↑' : '↓' }}</span>
+        </th>
         @if (showTypeColumn()) { <th>Tipo</th> }
         <th>Detalhes</th>
         <th>Sessão</th>

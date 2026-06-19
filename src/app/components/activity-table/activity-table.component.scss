@@ -89,6 +89,22 @@
     border-bottom: 1px solid var(--border-medium, #e2e8f0);
   }
 
+  th.th-sort {
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.12s;
+
+    &:hover { color: #475569; }
+
+    .sort-arrow {
+      display: inline-block;
+      margin-left: 4px;
+      font-size: 0.8rem;
+      color: #022f5e;
+      font-weight: 700;
+    }
+  }
+
   tbody tr {
     border-top: 1px solid #f1f5f9;
     &:hover { background: #f8fafc; }
