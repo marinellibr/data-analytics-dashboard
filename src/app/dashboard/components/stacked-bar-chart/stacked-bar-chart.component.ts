@@ -24,6 +24,8 @@ export interface ChartSeries {
 export class StackedBarChartComponent {
   readonly labels = input.required<string[]>();
   readonly series = input.required<ChartSeries[]>();
+  // When true, columns are tappable and show a pointer cursor.
+  readonly clickable = input(false);
   // Emits the index of the clicked category (e.g. the hour or day column).
   readonly barClick = output<number>();
 
@@ -41,18 +43,25 @@ export class StackedBarChartComponent {
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          // 'index' + intersect:false makes the whole vertical column for a
+          // category a hit target, so a tap anywhere above an hour selects it.
+          // Crucial on mobile, where individual bars are only a few px wide.
+          interaction: { mode: 'index', intersect: false },
           plugins: {
             legend: { display: false },
             tooltip: { mode: 'index', intersect: false },
           },
-          onClick: (_evt, elements) => {
-            if (!elements.length) return;
-            const index = elements[0].index;
-            this.zone.run(() => this.barClick.emit(index));
+          onClick: (evt, _elements, chart) => {
+            if (!this.clickable()) return;
+            const native = evt.native;
+            if (!native) return;
+            const points = chart.getElementsAtEventForMode(native, 'index', { intersect: false }, false);
+            if (!points.length) return;
+            this.zone.run(() => this.barClick.emit(points[0].index));
           },
           onHover: (evt, elements) => {
             const target = evt.native?.target as HTMLElement | null;
-            if (target) target.style.cursor = elements.length ? 'pointer' : 'default';
+            if (target) target.style.cursor = this.clickable() && elements.length ? 'pointer' : 'default';
           },
           scales: {
             x: {

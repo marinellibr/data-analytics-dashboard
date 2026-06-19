@@ -118,6 +118,7 @@
               <app-stacked-bar-chart
                 [labels]="hourlyLabels"
                 [series]="hourlySeries()"
+                [clickable]="true"
                 (barClick)="onHourClick($event)"
               />
             </div>
