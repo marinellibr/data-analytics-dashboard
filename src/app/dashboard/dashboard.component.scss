@@ -240,6 +240,23 @@
   min-height: 0;
 }
 
+// Bottom row: 24h chart (wider) next to the UTM pie.
+.charts-bottom {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 12px;
+  min-height: 0;
+}
+
+.chart-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+}
+
 .chart-card {
   background: #fff;
   border: 1px solid var(--border-medium, #e2e8f0);
@@ -333,6 +350,12 @@
   // Charts stack with a comfortable minimum height instead of splitting 50/50.
   .charts {
     grid-template-rows: none;
+    grid-auto-rows: minmax(260px, auto);
+  }
+
+  // The bottom row stacks too: 24h chart above the UTM pie.
+  .charts-bottom {
+    grid-template-columns: 1fr;
     grid-auto-rows: minmax(260px, auto);
   }
 

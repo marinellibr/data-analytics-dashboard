@@ -9,6 +9,7 @@ import { DropdownComponent, IconComponent, TextComponent, TagComponent } from 'c
 import { AnalyticsApiService, AppData } from '../services/analytics-api.service';
 import { Activity, ActivityType, ACTIVITY_TYPES, emptyCounts, localDay, localHour } from '../models/activity';
 import { StackedBarChartComponent, ChartSeries } from './components/stacked-bar-chart/stacked-bar-chart.component';
+import { PieChartComponent } from './components/pie-chart/pie-chart.component';
 
 const EMPTY: AppData = { appID: '', activities: [], counts: emptyCounts() };
 
@@ -23,7 +24,7 @@ const formatDay = (iso: string): string => {
   imports: [
     FormsModule,
     IconComponent, TextComponent, TagComponent, DropdownComponent,
-    StackedBarChartComponent,
+    StackedBarChartComponent, PieChartComponent,
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
@@ -155,6 +156,21 @@ export class DashboardComponent {
       data: this.hours.map((h) => byHour[h][t.key]),
     }));
   });
+
+  // ── UTM source breakdown (sessions grouped by utm_source) ─────────────────
+  readonly utmBreakdown = computed(() => {
+    const counts = new Map<string, number>();
+    for (const a of this.activities()) {
+      if (a.type !== 'session') continue;
+      const src = a.utmSource?.trim() || 'Direto / sem UTM';
+      counts.set(src, (counts.get(src) ?? 0) + 1);
+    }
+    const entries = [...counts.entries()].sort((a, b) => b[1] - a[1]);
+    return { labels: entries.map((e) => e[0]), data: entries.map((e) => e[1]) };
+  });
+  readonly utmLabels = computed(() => this.utmBreakdown().labels);
+  readonly utmData = computed(() => this.utmBreakdown().data);
+  readonly hasUtm = computed(() => this.utmData().length > 0);
 
   readonly hasData = computed(() => this.totalActivities() > 0);
 

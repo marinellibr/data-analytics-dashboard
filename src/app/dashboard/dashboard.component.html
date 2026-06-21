@@ -103,26 +103,46 @@
             </div>
           </div>
 
-          <div class="chart-card">
-            <div class="chart-header">
-              <creamy-kit-text type="label" size="xsmall" color="variant">Distribuição nas 24h</creamy-kit-text>
-              <creamy-kit-dropdown
-                class="day-picker"
-                [options]="dayOptions()"
-                placeholder="Dia"
-                [ngModel]="selectedDay()"
-                (ngModelChange)="onDayChange($event)"
-              />
+          <div class="charts-bottom">
+
+            <div class="chart-card">
+              <div class="chart-header">
+                <creamy-kit-text type="label" size="xsmall" color="variant">Distribuição nas 24h</creamy-kit-text>
+                <creamy-kit-dropdown
+                  class="day-picker"
+                  [options]="dayOptions()"
+                  placeholder="Dia"
+                  [ngModel]="selectedDay()"
+                  (ngModelChange)="onDayChange($event)"
+                />
+              </div>
+              <div class="chart-fill">
+                <app-stacked-bar-chart
+                  [labels]="hourlyLabels"
+                  [series]="hourlySeries()"
+                  [clickable]="true"
+                  (barClick)="onHourClick($event)"
+                />
+              </div>
+              <p class="chart-foot">Clique em uma barra para ver os detalhes da hora</p>
             </div>
-            <div class="chart-fill">
-              <app-stacked-bar-chart
-                [labels]="hourlyLabels"
-                [series]="hourlySeries()"
-                [clickable]="true"
-                (barClick)="onHourClick($event)"
-              />
+
+            <div class="chart-card">
+              <div class="chart-header">
+                <creamy-kit-text type="label" size="xsmall" color="variant">Origem das sessões (UTM)</creamy-kit-text>
+                <span class="chart-hint">{{ counts()['session'] }} sessão(ões)</span>
+              </div>
+              <div class="chart-fill">
+                @if (hasUtm()) {
+                  <app-pie-chart [labels]="utmLabels()" [data]="utmData()" />
+                } @else {
+                  <div class="chart-empty">
+                    <creamy-kit-text type="body">Sem sessões para exibir</creamy-kit-text>
+                  </div>
+                }
+              </div>
             </div>
-            <p class="chart-foot">Clique em uma barra para ver os detalhes da hora</p>
+
           </div>
 
         </div>
