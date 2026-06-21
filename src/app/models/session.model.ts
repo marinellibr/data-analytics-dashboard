@@ -4,6 +4,7 @@ export interface SessionContext {
   device: DeviceType;
   browser: string;
   referrer: string;
+  utmSource?: string; // marketing attribution (utm_source), optional
 }
 
 export interface Session {

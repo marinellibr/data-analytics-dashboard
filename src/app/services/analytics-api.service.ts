@@ -78,6 +78,7 @@ export class AnalyticsApiService {
         device: s.context?.device,
         browser: s.context?.browser,
         referrer: s.context?.referrer,
+        utmSource: s.context?.utmSource,
         userID: s.userID,
         endTime: s.endTime,
       })),
