@@ -5,6 +5,7 @@ export interface SessionContext {
   browser: string;
   referrer: string;
   utmSource?: string; // marketing attribution (utm_source), optional
+  utmMedium?: string; // marketing attribution (utm_medium), optional
   country?: string; // ISO country code, enriched server-side from edge geo
   city?: string; // city name, enriched server-side from edge geo
 }
