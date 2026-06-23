@@ -72,17 +72,19 @@
               }
             }
           </td>
-          <td class="nowrap session-cell">
-            @if (a.sessionID && appID()) {
-              <button type="button" class="session-link mono" (click)="openSession(a.sessionID)">{{ a.sessionID }}</button>
-            } @else {
-              <span class="mono muted">{{ a.sessionID || '—' }}</span>
-            }
-            @if (a.sessionID && sessionGeo()[a.sessionID]; as geo) {
-              @if (geo.city || geo.country) {
-                <span class="session-geo">{{ geo.city || '?' }}@if (geo.country) { · {{ geo.country }} }</span>
+          <td class="nowrap">
+            <div class="session-cell">
+              @if (a.sessionID && appID()) {
+                <button type="button" class="session-link mono" (click)="openSession(a.sessionID)">{{ a.sessionID }}</button>
+              } @else {
+                <span class="mono muted">{{ a.sessionID || '—' }}</span>
               }
-            }
+              @if (a.sessionID && sessionGeo()[a.sessionID]; as geo) {
+                @if (geo.city || geo.country) {
+                  <span class="session-geo">{{ geo.city || '?' }}@if (geo.country) { · {{ geo.country }} }</span>
+                }
+              }
+            </div>
           </td>
         </tr>
       }
