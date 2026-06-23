@@ -69,17 +69,19 @@
                 <span>{{ a.device }} · {{ a.browser }}</span>
                 <span class="sub">ref: {{ a.referrer }}@if (a.userID) { · user: {{ a.userID }} }</span>
                 @if (a.utmSource) { <span class="sub">utm: {{ a.utmSource }}</span> }
-                @if (a.city || a.country) {
-                  <span class="sub">local: {{ a.city || '?' }}@if (a.country) { · {{ a.country }} }</span>
-                }
               }
             }
           </td>
-          <td class="nowrap">
+          <td class="nowrap session-cell">
             @if (a.sessionID && appID()) {
               <button type="button" class="session-link mono" (click)="openSession(a.sessionID)">{{ a.sessionID }}</button>
             } @else {
               <span class="mono muted">{{ a.sessionID || '—' }}</span>
+            }
+            @if (a.sessionID && sessionGeo()[a.sessionID]; as geo) {
+              @if (geo.city || geo.country) {
+                <span class="session-geo">{{ geo.city || '?' }}@if (geo.country) { · {{ geo.country }} }</span>
+              }
             }
           </td>
         </tr>

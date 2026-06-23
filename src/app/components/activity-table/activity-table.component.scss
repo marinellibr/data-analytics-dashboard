@@ -152,6 +152,13 @@
   margin-right: 4px;
 }
 
+.session-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-start;
+}
+
 .session-link {
   background: none;
   border: none;
@@ -165,6 +172,11 @@
   transition: color 0.12s;
 
   &:hover { color: #022f5e; }
+}
+
+.session-geo {
+  font-size: 0.72rem;
+  color: #94a3b8;
 }
 
 .mono { font-family: monospace; font-size: 0.78rem; }

@@ -17,6 +17,9 @@ export class ActivityTableComponent {
   readonly items = input.required<Activity[]>();
   // When set, the session cell becomes a link to that app's session detail.
   readonly appID = input<string>('');
+  // sessionID -> visitor geo, so any row can show where its session came from
+  // (geo lives on the session record, which may not be among the rows shown).
+  readonly sessionGeo = input<Record<string, { country?: string; city?: string }>>({});
 
   readonly types = ACTIVITY_TYPES;
   readonly activeTab = signal<TabKey>('all');

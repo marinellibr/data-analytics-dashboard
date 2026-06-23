@@ -95,6 +95,18 @@ export class TimeBandDetailComponent {
 
   readonly total = computed(() => this.items().length);
 
+  // sessionID -> visitor geo, built from every session in the app so any row
+  // can show its location even if the session record isn't among the rows.
+  readonly sessionGeo = computed(() => {
+    const map: Record<string, { country?: string; city?: string }> = {};
+    for (const a of this.data().activities) {
+      if (a.type === 'session' && a.sessionID) {
+        map[a.sessionID] = { country: a.country, city: a.city };
+      }
+    }
+    return map;
+  });
+
   readonly counts = computed(() => {
     const c = emptyCounts();
     for (const a of this.items()) c[a.type]++;
