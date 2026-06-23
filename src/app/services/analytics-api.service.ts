@@ -79,6 +79,8 @@ export class AnalyticsApiService {
         browser: s.context?.browser,
         referrer: s.context?.referrer,
         utmSource: s.context?.utmSource,
+        country: s.context?.country,
+        city: s.context?.city,
         userID: s.userID,
         endTime: s.endTime,
       })),

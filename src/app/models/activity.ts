@@ -25,6 +25,8 @@ export interface Activity {
   browser?: string;
   referrer?: string;
   utmSource?: string;
+  country?: string;
+  city?: string;
   userID?: string;
   endTime?: string;
 }
